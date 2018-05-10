@@ -6,22 +6,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import zpi.pls.zpidominator2000.RoomsFragment.OnListFragmentInteractionListener;
+import zpi.pls.zpidominator2000.RoomsFragment.OnRoomSelectedListener;
 import zpi.pls.zpidominator2000.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * specified {@link OnRoomSelectedListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyRoomItemRecyclerViewAdapter extends RecyclerView.Adapter<MyRoomItemRecyclerViewAdapter.ViewHolder> {
 
     private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final OnRoomSelectedListener mListener;
 
-    public MyRoomItemRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyRoomItemRecyclerViewAdapter(List<DummyItem> items, OnRoomSelectedListener listener) {
         mValues = items;
         mListener = listener;
     }

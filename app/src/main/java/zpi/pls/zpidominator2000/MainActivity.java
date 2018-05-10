@@ -1,14 +1,13 @@
 package zpi.pls.zpidominator2000;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,9 +17,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import zpi.pls.zpidominator2000.dummy.DummyContent;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        RoomsFragment.OnRoomSelectedListener,
+        OneRoomFragment.OnOneRoomInteractionListener {
 
     private DrawerLayout drawerLayout;
     private View drawerView;
@@ -106,13 +110,29 @@ public class MainActivity extends AppCompatActivity
 
     private void goToRooms() {
         // Create new fragment and transaction
-        Fragment newFragment = new RoomsFragment();
+        Fragment newFragment = RoomsFragment.newInstance();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack
         transaction.replace(R.id.fragmentsContainer, newFragment);
 //        transaction.addToBackStack(null);
+
+        // Commit the transaction
+        transaction.commit();
+
+        getDrawerView().setCheckedItem(R.id.nav_rooms);
+    }
+
+    private void goToOneRoom(DummyContent.DummyItem item) {
+        // Create new fragment and transaction
+        Fragment newFragment = OneRoomFragment.newInstance(item.id);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this fragment,
+        // and add the transaction to the back stack
+        transaction.replace(R.id.fragmentsContainer, newFragment);
+        transaction.addToBackStack(null);
 
         // Commit the transaction
         transaction.commit();
@@ -155,5 +175,15 @@ public class MainActivity extends AppCompatActivity
 
     private void closeDrawers() {
         drawerLayout.closeDrawers();
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+        goToOneRoom(item);
+    }
+
+    @Override
+    public void onOneRoomFragmentInteraction(Uri uri) {
+
     }
 }
