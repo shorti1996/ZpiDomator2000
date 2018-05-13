@@ -9,8 +9,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import zpi.pls.zpidominator2000.Fragments.RoomsFragment.OnRoomSelectedListener;
+import zpi.pls.zpidominator2000.Model.Rooms;
 import zpi.pls.zpidominator2000.R;
-import zpi.pls.zpidominator2000.Rooms;
 import zpi.pls.zpidominator2000.dummy.DummyContent.DummyItem;
 
 /**

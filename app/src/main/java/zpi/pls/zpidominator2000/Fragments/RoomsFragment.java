@@ -16,9 +16,9 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import zpi.pls.zpidominator2000.Adapters.MyRoomItemRecyclerViewAdapter;
+import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.Model.Rooms;
 import zpi.pls.zpidominator2000.R;
-import zpi.pls.zpidominator2000.Rooms;
-import zpi.pls.zpidominator2000.ZpiApiService;
 
 /**
  * A fragment representing a list of Items.

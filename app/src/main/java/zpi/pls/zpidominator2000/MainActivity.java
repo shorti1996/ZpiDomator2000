@@ -21,9 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 
 import retrofit2.Retrofit;
+import zpi.pls.zpidominator2000.Api.ZpiApiRetrofitClient;
+import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.Fragments.HomePlanFragment;
 import zpi.pls.zpidominator2000.Fragments.OneRoomFragment;
 import zpi.pls.zpidominator2000.Fragments.RoomsFragment;
+import zpi.pls.zpidominator2000.Model.Rooms;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,

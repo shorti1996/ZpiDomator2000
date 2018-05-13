@@ -1,4 +1,4 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Api;
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
@@ -10,6 +10,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class ZpiApiRetrofitClient {
+
+    public static final int HTTP_RESPONSE_OK = 200;
 
     public static String baseUrl = "http://192.168.0.106:8000/api/";
     private static Retrofit retrofit = null;

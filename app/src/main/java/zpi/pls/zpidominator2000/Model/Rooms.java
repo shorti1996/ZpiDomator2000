@@ -1,4 +1,4 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

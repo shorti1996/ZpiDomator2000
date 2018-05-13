@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import zpi.pls.zpidominator2000.Adapters.OneRoomPageAdapter;
+import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.R;
-import zpi.pls.zpidominator2000.ZpiApiService;
 
 
 /**
@@ -28,11 +28,11 @@ import zpi.pls.zpidominator2000.ZpiApiService;
 public class OneRoomFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_ROOM_ID = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private int roomId;
     private String mParam2;
 
     private OnOneRoomInteractionListener mListener;
@@ -51,7 +51,7 @@ public class OneRoomFragment extends Fragment {
     public static OneRoomFragment newInstance(ZpiApiService zpiApiService, int id) {
         OneRoomFragment fragment = new OneRoomFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, id);
+        args.putInt(ARG_ROOM_ID, id);
         fragment.apiService = zpiApiService;
 //        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
@@ -62,7 +62,7 @@ public class OneRoomFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            roomId = getArguments().getInt(ARG_ROOM_ID);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
@@ -71,7 +71,7 @@ public class OneRoomFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        Toast.makeText(this.getContext(), mParam1, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this.getContext(), roomId, Toast.LENGTH_SHORT).show();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_one_room, container, false);
     }
@@ -80,14 +80,14 @@ public class OneRoomFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 //        titleView = view.findViewById(R.id.one_room_title);
-//        titleView.setText(mParam1);
+//        titleView.setText(roomId);
         viewPager = view.findViewById(R.id.one_room_viewpager);
         setupViewPager(viewPager);
 
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        OneRoomSettingsFragment oneRoomSettingsFragment = OneRoomSettingsFragment.newInstance("", "");
+        OneRoomSettingsFragment oneRoomSettingsFragment = OneRoomSettingsFragment.newInstance(apiService, roomId);
         OneRoomStatsFragment oneRoomStatsFragment = OneRoomStatsFragment.newInstance("", "");
         OneRoomPageAdapter adapter = new OneRoomPageAdapter(getFragmentManager());
 //        oneRoomSettingsFragment.setRetainInstance(true);
