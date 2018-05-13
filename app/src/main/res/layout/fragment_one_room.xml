@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="zpi.pls.zpidominator2000.OneRoomFragment">
+    tools:context="zpi.pls.zpidominator2000.Fragments.OneRoomFragment">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/one_room_viewpager"

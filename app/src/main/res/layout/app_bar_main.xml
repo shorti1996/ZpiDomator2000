@@ -39,7 +39,7 @@
         android:layout_width="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" >
 
-        <!--<fragment class="zpi.pls.zpidominator2000.HomePlanFragment"-->
+        <!--<fragment clazpi.pls.zpidominator2000.Fragments.HomePlanFragmentment"-->
             <!--android:id="@+id/homePlanFragment"-->
             <!--android:layout_width="match_parent" android:layout_height="match_parent"-->
             <!--/>-->

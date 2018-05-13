@@ -1,4 +1,4 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import zpi.pls.zpidominator2000.Adapters.MyRoomItemRecyclerViewAdapter;
+import zpi.pls.zpidominator2000.R;
 import zpi.pls.zpidominator2000.dummy.DummyContent;
 import zpi.pls.zpidominator2000.dummy.DummyContent.DummyItem;
 

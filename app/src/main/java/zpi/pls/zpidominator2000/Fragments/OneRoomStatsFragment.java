@@ -1,28 +1,25 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import zpi.pls.zpidominator2000.R;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link HomePlanFragment.OnFragmentInteractionListener} interface
+ * {@link OneRoomStatsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link HomePlanFragment#newInstance} factory method to
+ * Use the {@link OneRoomStatsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomePlanFragment extends Fragment {
+public class OneRoomStatsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -32,15 +29,9 @@ public class HomePlanFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    ImageView homePlanIv;
-    ConstraintLayout rootView;
-    TextView floorText;
-
-    boolean isOnZeroFloor = true;
-
     private OnFragmentInteractionListener mListener;
 
-    public HomePlanFragment() {
+    public OneRoomStatsFragment() {
         // Required empty public constructor
     }
 
@@ -50,11 +41,11 @@ public class HomePlanFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment HomePlanFragment.
+     * @return A new instance of fragment OneRoomStatsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomePlanFragment newInstance(String param1, String param2) {
-        HomePlanFragment fragment = new HomePlanFragment();
+    public static OneRoomStatsFragment newInstance(String param1, String param2) {
+        OneRoomStatsFragment fragment = new OneRoomStatsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -75,35 +66,7 @@ public class HomePlanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home_plan, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        homePlanIv = getView().findViewById(R.id.homeFromAboveIv);
-        homePlanIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isOnZeroFloor = !isOnZeroFloor;
-                updateFloor(isOnZeroFloor);
-            }
-        });
-        rootView = getView().findViewById(R.id.ConstraintLayoutRoot);
-        floorText = getView().findViewById(R.id.floorTv);
-    }
-
-    private void updateFloor(boolean isOnZeroFloor) {
-        if (isOnZeroFloor) {
-            homePlanIv.setImageResource(R.drawable.home_plan);
-            rootView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorHomeGreenBg));
-            floorText.setText(R.string.ground_floor);
-        } else {
-            homePlanIv.setImageResource(R.drawable.home_1st);
-            rootView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorHomeBlueBg));
-            floorText.setText(R.string.first_floor);
-        }
+        return inflater.inflate(R.layout.fragment_one_room_stats, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -120,7 +83,7 @@ public class HomePlanFragment extends Fragment {
             mListener = (OnFragmentInteractionListener) context;
         } else {
 //            throw new RuntimeException(context.toString()
-//                    + " must implement OnOneRoomInteractionListener");
+//                    + " must implement OnFragmentInteractionListener");
         }
     }
 

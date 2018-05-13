@@ -1,4 +1,4 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -11,10 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.LinkedList;
-import java.util.List;
+import zpi.pls.zpidominator2000.Adapters.OneRoomPageAdapter;
+import zpi.pls.zpidominator2000.R;
 
 
 /**

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="zpi.pls.zpidominator2000.OneRoomStatsFragment">
+    tools:context="zpi.pls.zpidominator2000.Fragments.OneRoomStatsFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

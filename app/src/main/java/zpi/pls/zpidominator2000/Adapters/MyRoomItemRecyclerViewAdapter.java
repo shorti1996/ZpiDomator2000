@@ -1,4 +1,4 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,10 +6,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import zpi.pls.zpidominator2000.RoomsFragment.OnRoomSelectedListener;
-import zpi.pls.zpidominator2000.dummy.DummyContent.DummyItem;
-
 import java.util.List;
+
+import zpi.pls.zpidominator2000.Fragments.RoomsFragment.OnRoomSelectedListener;
+import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.dummy.DummyContent.DummyItem;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
