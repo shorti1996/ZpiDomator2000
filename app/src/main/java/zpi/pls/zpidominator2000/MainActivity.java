@@ -16,10 +16,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
 import zpi.pls.zpidominator2000.Fragments.HomePlanFragment;
 import zpi.pls.zpidominator2000.Fragments.OneRoomFragment;
 import zpi.pls.zpidominator2000.Fragments.RoomsFragment;
@@ -121,6 +125,22 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
 
         getDrawerView().setCheckedItem(R.id.nav_home);
+
+        Retrofit retrofit = ZpiApiRetrofitClient.getClient();
+        // Retrofit instance which was created earlier
+        ZpiApiService apiService = retrofit.create(ZpiApiService.class);
+        // Return type as defined in TwitterApi interface
+        Observable<Rooms> roomsObservable = apiService.listRooms();
+
+        roomsObservable
+                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
+                .subscribe((Rooms x) -> {
+            Log.d("AA", "a");
+            for (Rooms.Room r : x.getRooms()) {
+                Log.d("AA", r.getName());
+            }
+        });
     }
 
     private void goToRooms() {
