@@ -3,6 +3,7 @@ package zpi.pls.zpidominator2000;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ public class Rooms {
 
     @SerializedName("rooms")
     @Expose
-    private List<Room> rooms = null;
+    private List<Room> rooms = new LinkedList<>();
 
     public List<Room> getRooms() {
         return rooms;

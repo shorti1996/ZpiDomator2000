@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import zpi.pls.zpidominator2000.Adapters.OneRoomPageAdapter;
 import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.ZpiApiService;
 
 
 /**
@@ -40,16 +41,18 @@ public class OneRoomFragment extends Fragment {
     private ViewPager viewPager;
 
     private TabLayout tabLayout;
+    private ZpiApiService apiService;
 
     public OneRoomFragment() {
         // Required empty public constructor
     }
 
     // TODO: Maybe uri or something
-    public static OneRoomFragment newInstance(String id) {
+    public static OneRoomFragment newInstance(ZpiApiService zpiApiService, int id) {
         OneRoomFragment fragment = new OneRoomFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, id);
+        args.putInt(ARG_PARAM1, id);
+        fragment.apiService = zpiApiService;
 //        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;

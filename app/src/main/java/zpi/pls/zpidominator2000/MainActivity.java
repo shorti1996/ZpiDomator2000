@@ -16,18 +16,14 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import io.reactivex.Observable;
-import io.reactivex.schedulers.Schedulers;
 import retrofit2.Retrofit;
 import zpi.pls.zpidominator2000.Fragments.HomePlanFragment;
 import zpi.pls.zpidominator2000.Fragments.OneRoomFragment;
 import zpi.pls.zpidominator2000.Fragments.RoomsFragment;
-import zpi.pls.zpidominator2000.dummy.DummyContent;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -41,6 +37,8 @@ public class MainActivity extends AppCompatActivity
     private View drawerView;
     private Toolbar toolbar;
     private TabLayout tabLayout;
+    private Retrofit retrofit;
+    private ZpiApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +48,12 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                popEntireBackstack();
-                Snackbar.make(view, "Witaj w domku", Snackbar.LENGTH_SHORT)
+        fab.setOnClickListener(view -> {
+            popEntireBackstack();
+            Snackbar.make(view, "Witaj w domku", Snackbar.LENGTH_SHORT)
 //                        .setAction("Action", this)
-                        .show();
-                goToHomePlan();
-            }
+                    .show();
+            goToHomePlan();
         });
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -71,6 +66,9 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         toolbar = findViewById(R.id.toolbar);
         tabLayout = findViewById(R.id.tabs);
+
+        retrofit = ZpiApiRetrofitClient.getClient();
+        apiService = retrofit.create(ZpiApiService.class);
 
         goToHomePlan();
     }
@@ -125,27 +123,11 @@ public class MainActivity extends AppCompatActivity
         transaction.commit();
 
         getDrawerView().setCheckedItem(R.id.nav_home);
-
-        Retrofit retrofit = ZpiApiRetrofitClient.getClient();
-        // Retrofit instance which was created earlier
-        ZpiApiService apiService = retrofit.create(ZpiApiService.class);
-        // Return type as defined in TwitterApi interface
-        Observable<Rooms> roomsObservable = apiService.listRooms();
-
-        roomsObservable
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io())
-                .subscribe((Rooms x) -> {
-            Log.d("AA", "a");
-            for (Rooms.Room r : x.getRooms()) {
-                Log.d("AA", r.getName());
-            }
-        });
     }
 
     private void goToRooms() {
         // Create new fragment and transaction
-        Fragment newFragment = RoomsFragment.newInstance();
+        Fragment newFragment = RoomsFragment.newInstance(apiService);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
@@ -161,9 +143,9 @@ public class MainActivity extends AppCompatActivity
 //        tabLayout.addTab();
     }
 
-    private void goToOneRoom(DummyContent.DummyItem item) {
+    private void goToOneRoom(Rooms.Room item) {
         // Create new fragment and transaction
-        Fragment newFragment = OneRoomFragment.newInstance(item.content);
+        Fragment newFragment = OneRoomFragment.newInstance(apiService, item.getRoomId());
 //        newFragment.setRetainInstance(true);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -243,11 +225,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
-        goToOneRoom(item);
-    }
-
-    @Override
     public void onOneRoomFragmentInteraction(Uri uri) {
 
     }
@@ -255,5 +232,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onOneRoomFragmentByeBye() {
         tabLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onRoomListFragmentInteraction(Rooms.Room item) {
+        goToOneRoom(item);
     }
 }

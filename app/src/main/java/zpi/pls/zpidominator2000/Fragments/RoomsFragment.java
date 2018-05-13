@@ -6,14 +6,19 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import zpi.pls.zpidominator2000.Adapters.MyRoomItemRecyclerViewAdapter;
 import zpi.pls.zpidominator2000.R;
-import zpi.pls.zpidominator2000.dummy.DummyContent;
-import zpi.pls.zpidominator2000.dummy.DummyContent.DummyItem;
+import zpi.pls.zpidominator2000.Rooms;
+import zpi.pls.zpidominator2000.ZpiApiService;
 
 /**
  * A fragment representing a list of Items.
@@ -28,6 +33,8 @@ public class RoomsFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnRoomSelectedListener mListener;
+    private ZpiApiService apiService;
+    private RecyclerView recyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -38,8 +45,9 @@ public class RoomsFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static RoomsFragment newInstance() {
+    public static RoomsFragment newInstance(ZpiApiService zpiApiService) {
         RoomsFragment fragment = new RoomsFragment();
+        fragment.apiService = zpiApiService;
 //        Bundle args = new Bundle();
 //        args.putInt(ARG_COLUMN_COUNT, columnCount);
 //        fragment.setArguments(args);
@@ -64,13 +72,26 @@ public class RoomsFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyRoomItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+//            recyclerView.setAdapter(new MyRoomItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            Observable<Rooms> roomsObservable = apiService.listRooms();
+
+            roomsObservable
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .doOnError(x -> Toast.makeText(getContext(), "Couldn't load rooms", Toast.LENGTH_SHORT).show())
+                    .onErrorReturnItem(new Rooms())
+                    .subscribe((Rooms rooms) -> {
+                        for (Rooms.Room r : rooms.getRooms()) {
+                            Log.d("AA", r.getName());
+                        }
+                        recyclerView.setAdapter(new MyRoomItemRecyclerViewAdapter(rooms, mListener));
+                    });
         }
         return view;
     }
@@ -105,6 +126,6 @@ public class RoomsFragment extends Fragment {
      */
     public interface OnRoomSelectedListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onRoomListFragmentInteraction(Rooms.Room item);
     }
 }
