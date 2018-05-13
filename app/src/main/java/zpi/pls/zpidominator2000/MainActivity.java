@@ -1,11 +1,14 @@
 package zpi.pls.zpidominator2000;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -17,7 +20,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import zpi.pls.zpidominator2000.dummy.DummyContent;
 
@@ -26,8 +28,13 @@ public class MainActivity extends AppCompatActivity
         RoomsFragment.OnRoomSelectedListener,
         OneRoomFragment.OnOneRoomInteractionListener {
 
+    private static final String ONE_ROOM_BACKSTACK_NAME = "oneRoomFragmentBackstackName";
+    private static final String HOME_PLAN_BACKSTACK_NAME = "homePlanFragmentBackstackName";
+
     private DrawerLayout drawerLayout;
     private View drawerView;
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +47,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                popEntireBackstack();
                 Snackbar.make(view, "Witaj w domku", Snackbar.LENGTH_SHORT)
 //                        .setAction("Action", this)
                         .show();
@@ -55,6 +63,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        toolbar = findViewById(R.id.toolbar);
+        tabLayout = findViewById(R.id.tabs);
 
         goToHomePlan();
     }
@@ -95,13 +105,16 @@ public class MainActivity extends AppCompatActivity
     private void goToHomePlan() {
         // Create new fragment and transaction
         Fragment newFragment = new HomePlanFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack
         transaction.replace(R.id.fragmentsContainer, newFragment);
 //        transaction.addToBackStack(null);
-
+//        if (fragmentManager.getBackStackEntryCount() == 0) {
+//            transaction.addToBackStack(HOME_PLAN_BACKSTACK_NAME);
+//        }
         // Commit the transaction
         transaction.commit();
 
@@ -116,26 +129,32 @@ public class MainActivity extends AppCompatActivity
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack
         transaction.replace(R.id.fragmentsContainer, newFragment);
-//        transaction.addToBackStack(null);
+        transaction.addToBackStack(null);
 
         // Commit the transaction
         transaction.commit();
 
         getDrawerView().setCheckedItem(R.id.nav_rooms);
+
+//        tabLayout.addTab();
     }
 
     private void goToOneRoom(DummyContent.DummyItem item) {
         // Create new fragment and transaction
-        Fragment newFragment = OneRoomFragment.newInstance(item.id);
+        Fragment newFragment = OneRoomFragment.newInstance(item.content);
+//        newFragment.setRetainInstance(true);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack
         transaction.replace(R.id.fragmentsContainer, newFragment);
-        transaction.addToBackStack(null);
+        transaction.addToBackStack(ONE_ROOM_BACKSTACK_NAME);
 
         // Commit the transaction
         transaction.commit();
+
+        tabLayout.setVisibility(View.VISIBLE);
+        ((OneRoomFragment) newFragment).setTabLayout(tabLayout);
 
         getDrawerView().setCheckedItem(R.id.nav_rooms);
     }
@@ -149,10 +168,20 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof HomePlanFragment) {
+            getDrawerView().setCheckedItem(R.id.nav_home);
+        } else if (fragment instanceof RoomsFragment) {
+            getDrawerView().setCheckedItem(R.id.nav_rooms);
+        }
+        super.onAttachFragment(fragment);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
+        popEntireBackstack();
         int id = item.getItemId();
 
         if (id == R.id.nav_rooms) {
@@ -173,6 +202,20 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void popEntireBackstack() {
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+//        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+//        if (backStackEntryCount > 0) {
+//            android.support.v4.app.FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(backStackEntryCount - 1);
+//            fragmentManager.popBackStack(backStackEntry.getId(), 0);
+//        }
+
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+//        FragmentManager fragmentManager = getFragmentManager();
+//        fragmentManager.popBackStack(fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount()).getId(), 0);
+    }
+
     private void closeDrawers() {
         drawerLayout.closeDrawers();
     }
@@ -185,5 +228,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onOneRoomFragmentInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onOneRoomFragmentByeBye() {
+        tabLayout.setVisibility(View.GONE);
     }
 }

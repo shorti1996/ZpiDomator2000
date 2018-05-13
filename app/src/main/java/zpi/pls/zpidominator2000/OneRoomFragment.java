@@ -3,11 +3,18 @@ package zpi.pls.zpidominator2000;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -30,18 +37,15 @@ public class OneRoomFragment extends Fragment {
 
     private OnOneRoomInteractionListener mListener;
 
+    private TextView titleView;
+    private ViewPager viewPager;
+
+    private TabLayout tabLayout;
+
     public OneRoomFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment OneRoomFragment.
-     */
     // TODO: Maybe uri or something
     public static OneRoomFragment newInstance(String id) {
         OneRoomFragment fragment = new OneRoomFragment();
@@ -59,14 +63,39 @@ public class OneRoomFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
 //            mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Toast.makeText(this.getContext(), mParam1, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this.getContext(), mParam1, Toast.LENGTH_SHORT).show();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_one_room, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+//        titleView = view.findViewById(R.id.one_room_title);
+//        titleView.setText(mParam1);
+        viewPager = view.findViewById(R.id.one_room_viewpager);
+        setupViewPager(viewPager);
+
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        OneRoomSettingsFragment oneRoomSettingsFragment = OneRoomSettingsFragment.newInstance("", "");
+        OneRoomStatsFragment oneRoomStatsFragment = OneRoomStatsFragment.newInstance("", "");
+        OneRoomPageAdapter adapter = new OneRoomPageAdapter(getFragmentManager());
+//        oneRoomSettingsFragment.setRetainInstance(true);
+//        oneRoomStatsFragment.setRetainInstance(true);
+        adapter.addFragment(oneRoomSettingsFragment, "CONTROL");
+        adapter.addFragment(oneRoomStatsFragment, "STATS");
+        viewPager.setAdapter(null);
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(0);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -90,7 +119,12 @@ public class OneRoomFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        mListener.onOneRoomFragmentByeBye();
         mListener = null;
+    }
+
+    public void setTabLayout(TabLayout tabLayout) {
+        this.tabLayout = tabLayout;
     }
 
     /**
@@ -106,5 +140,6 @@ public class OneRoomFragment extends Fragment {
     public interface OnOneRoomInteractionListener {
         // TODO: Update argument type and name
         void onOneRoomFragmentInteraction(Uri uri);
+        void onOneRoomFragmentByeBye();
     }
 }
