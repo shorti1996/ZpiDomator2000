@@ -13,7 +13,8 @@ public class ZpiApiRetrofitClient {
 
     public static final int HTTP_RESPONSE_OK = 200;
 
-    public static String baseUrl = "http://192.168.0.106:8000/api/";
+    public static final String apiServer = "192.168.0.106";
+    public static String baseUrl = "http://" + apiServer + ":8000/api/";
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient() {

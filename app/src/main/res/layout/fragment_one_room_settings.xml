@@ -159,7 +159,8 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lightbulb_ic">
+                app:layout_constraintTop_toBottomOf="@+id/lightbulb_ic"
+                tools:listitem="@layout/one_room_settings_light_vh" >
 
 
             </android.support.v7.widget.RecyclerView>

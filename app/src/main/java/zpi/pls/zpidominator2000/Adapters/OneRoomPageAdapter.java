@@ -40,4 +40,10 @@ public class OneRoomPageAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         return titles.get(position);
     }
+
+    public void d() {
+        for (Fragment f : fragmentsInsideMe) {
+            f.onDestroy();
+        }
+    }
 }

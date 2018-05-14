@@ -1,9 +1,11 @@
 package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +15,11 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import zpi.pls.zpidominator2000.Adapters.OneRoomLightsAdapter;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.Model.Lights;
 import zpi.pls.zpidominator2000.Model.RoomTemp;
 import zpi.pls.zpidominator2000.R;
 
@@ -45,6 +50,10 @@ public class OneRoomSettingsFragment extends Fragment {
     private TextView title;
     public String roomName;
     public TextView currentTempVal;
+    public RecyclerView lightsRv;
+    public Observable<Long> ping;
+    public Disposable pingSubscription;
+    public OneRoomLightsAdapter adapter;
 
     public OneRoomSettingsFragment() {
         // Required empty public constructor
@@ -84,6 +93,8 @@ public class OneRoomSettingsFragment extends Fragment {
 
 //        ((TextView) view.findViewById(R.id.one_room_title)).setText(roomName);
         currentTempVal = view.findViewById(R.id.one_room_current_temp_val);
+        lightsRv = view.findViewById(R.id.one_room_light_rv);
+        lightsRv.setLayoutManager(new LinearLayoutManager(getContext()));
 
 //        RoomTemp roomTemp = new RoomTemp();
 //        roomTemp.setSetTemperature(12);
@@ -93,7 +104,7 @@ public class OneRoomSettingsFragment extends Fragment {
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .subscribeOn(Schedulers.io())
 //                .doOnError(x -> showToast("Couldn't set temperature"))
-//                .subscribe(x -> {
+//                .pingSubscription(x -> {
 //                    Log.d("AAAAAAAAaa", "" + x.code());
 //                    if (x.code() == HTTP_RESPONSE_OK) {
 //                        showToast("Temperature has been set");
@@ -102,15 +113,26 @@ public class OneRoomSettingsFragment extends Fragment {
 //                    }
 //                });
 
-        Observable<Long> ping = Observable.interval(0L, 5L, TimeUnit.SECONDS, Schedulers.io());
-        ping.observeOn(AndroidSchedulers.mainThread())
+        ping = Observable.interval(0L, 5L, TimeUnit.SECONDS, Schedulers.io());
+        pingSubscription = ping.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(tick -> UpdateCurrentTemp());
+                .subscribe(tick -> updateSettings());
 
         return view;
     }
 
-    private void UpdateCurrentTemp() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        pingSubscription.dispose();
+    }
+
+    private void updateSettings() {
+        updateCurrentTemp();
+        updateLights();
+    }
+
+    private void updateCurrentTemp() {
         Observable<RoomTemp> roomTempObservable = apiService.getTempInRoom(roomId);
         roomTempObservable
                 .observeOn(AndroidSchedulers.mainThread())
@@ -119,16 +141,26 @@ public class OneRoomSettingsFragment extends Fragment {
                 .subscribe(x -> currentTempVal.setText(formatTemperature(x.getTemperature())));
     }
 
+    private void updateLights() {
+        Observable<Lights> roomLightObservable = apiService.getLightsInRoom(roomId);
+        roomLightObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnError(x -> showToast(getContext(), "Couldn't get lights"))
+                .subscribe(x -> {
+                    for (Lights.Light light : x.getLights()) {
+                        Log.d("LIGHT", light.getName());
+                    }
+                    if (adapter == null) {
+                        adapter = new OneRoomLightsAdapter(x, null);
+                    }
+                    lightsRv.setAdapter(adapter);
+                });
+    }
+
     private String formatTemperature(double temperature) {
         String temperatureString = String.format("%.2f", temperature);
         return getResources().getString(R.string.one_room_curr_temp, temperatureString);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -160,6 +192,6 @@ public class OneRoomSettingsFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Lights.Light light);
     }
 }

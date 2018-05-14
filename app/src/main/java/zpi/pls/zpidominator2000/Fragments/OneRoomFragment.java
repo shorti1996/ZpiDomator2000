@@ -43,6 +43,7 @@ public class OneRoomFragment extends Fragment {
 
     private TabLayout tabLayout;
     private ZpiApiService apiService;
+    public OneRoomPageAdapter adapter;
 
     public OneRoomFragment() {
         // Required empty public constructor
@@ -90,7 +91,7 @@ public class OneRoomFragment extends Fragment {
     private void setupViewPager(ViewPager viewPager) {
         OneRoomSettingsFragment oneRoomSettingsFragment = OneRoomSettingsFragment.newInstance(apiService, roomId, roomName);
         OneRoomStatsFragment oneRoomStatsFragment = OneRoomStatsFragment.newInstance("", "");
-        OneRoomPageAdapter adapter = new OneRoomPageAdapter(getFragmentManager());
+        adapter = new OneRoomPageAdapter(getFragmentManager());
 //        oneRoomSettingsFragment.setRetainInstance(true);
 //        oneRoomStatsFragment.setRetainInstance(true);
         adapter.addFragment(oneRoomSettingsFragment, "CONTROL");
@@ -122,6 +123,7 @@ public class OneRoomFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        adapter.d();
         mListener.onOneRoomFragmentByeBye();
         mListener = null;
     }
