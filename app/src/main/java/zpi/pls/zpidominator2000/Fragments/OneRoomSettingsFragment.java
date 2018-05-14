@@ -8,7 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -16,6 +17,8 @@ import io.reactivex.schedulers.Schedulers;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.Model.RoomTemp;
 import zpi.pls.zpidominator2000.R;
+
+import static zpi.pls.zpidominator2000.Utils.showToast;
 
 
 /**
@@ -99,23 +102,26 @@ public class OneRoomSettingsFragment extends Fragment {
 //                    }
 //                });
 
+        Observable<Long> ping = Observable.interval(0L, 5L, TimeUnit.SECONDS, Schedulers.io());
+        ping.observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(tick -> UpdateCurrentTemp());
+
+        return view;
+    }
+
+    private void UpdateCurrentTemp() {
         Observable<RoomTemp> roomTempObservable = apiService.getTempInRoom(roomId);
         roomTempObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> showToast("Couldn't get temperature"))
+                .doOnError(x -> showToast(getContext(), "Couldn't get temperature"))
                 .subscribe(x -> currentTempVal.setText(formatTemperature(x.getTemperature())));
-
-        return view;
     }
 
     private String formatTemperature(double temperature) {
         String temperatureString = String.format("%.2f", temperature);
         return getResources().getString(R.string.one_room_curr_temp, temperatureString);
-    }
-
-    private void showToast(String text) {
-        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
