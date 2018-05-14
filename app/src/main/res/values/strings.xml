@@ -21,4 +21,5 @@ Praesent porta magna sed leo pulvinar molestie. Proin dictum porta sem euismod s
 
 Aliquam vel eros tellus. Aenean ultricies fringilla risus ac consequat. Donec maximus eleifend purus vel sollicitudin. Sed lacus metus, consectetur auctor leo nec, fermentum scelerisque nisl. Donec nisi odio, euismod sed erat ut, tincidunt commodo sem. Cras in auctor augue, quis ullamcorper magna. Nullam vulputate risus quis enim consequat lobortis. Pellentesque non sollicitudin lorem, eu dignissim mi. Integer fermentum ultrices pretium.</string>
     <string name="one_room_curr_temp">Obecnie %1$s&#8451;</string>
+    <string name="one_room_set_temp">%1$s&#8451;</string>
 </resources>
