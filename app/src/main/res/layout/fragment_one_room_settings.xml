@@ -99,14 +99,16 @@
                 app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp" />
 
             <TextView
-                android:id="@+id/one_room_current_temp"
+                android:id="@+id/one_room_current_temp_val"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="obecnie 21.5&#8451;"
+                android:layout_marginBottom="8dp"
+                android:text="@string/one_room_curr_temp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/spacer_r"
                 app:layout_constraintStart_toEndOf="@+id/spacer_l"
-                app:layout_constraintTop_toBottomOf="@+id/one_room_temp_val" />
+                app:layout_constraintTop_toBottomOf="@+id/one_room_temp_val"
+                tools:text="Obecnie 21.5&#8451;" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 

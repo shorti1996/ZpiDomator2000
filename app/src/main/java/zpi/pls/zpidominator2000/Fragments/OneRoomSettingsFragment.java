@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +13,9 @@ import android.widget.Toast;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Response;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.Model.RoomTemp;
 import zpi.pls.zpidominator2000.R;
-
-import static zpi.pls.zpidominator2000.Api.ZpiApiRetrofitClient.HTTP_RESPONSE_OK;
 
 
 /**
@@ -45,6 +41,7 @@ public class OneRoomSettingsFragment extends Fragment {
 
     private TextView title;
     public String roomName;
+    public TextView currentTempVal;
 
     public OneRoomSettingsFragment() {
         // Required empty public constructor
@@ -83,25 +80,38 @@ public class OneRoomSettingsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_one_room_settings, container, false);
 
 //        ((TextView) view.findViewById(R.id.one_room_title)).setText(roomName);
+        currentTempVal = view.findViewById(R.id.one_room_current_temp_val);
 
-        RoomTemp roomTemp = new RoomTemp();
-        roomTemp.setSetTemperature(12);
-        Observable<Response<Void>> roomsObservable = apiService.setTempInRoom(roomId, roomTemp);
+//        RoomTemp roomTemp = new RoomTemp();
+//        roomTemp.setSetTemperature(12);
+//        Observable<Response<Void>> setTempInRoomObservable = apiService.setTempInRoom(roomId, roomTemp);
+//
+//        setTempInRoomObservable
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io())
+//                .doOnError(x -> showToast("Couldn't set temperature"))
+//                .subscribe(x -> {
+//                    Log.d("AAAAAAAAaa", "" + x.code());
+//                    if (x.code() == HTTP_RESPONSE_OK) {
+//                        showToast("Temperature has been set");
+//                    } else {
+//                        showToast("ERR: " + x.code());
+//                    }
+//                });
 
-        roomsObservable
+        Observable<RoomTemp> roomTempObservable = apiService.getTempInRoom(roomId);
+        roomTempObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> showToast("Couldn't set temperature"))
-                .subscribe(x -> {
-                    Log.d("AAAAAAAAaa", "" + x.code());
-                    if (x.code() == HTTP_RESPONSE_OK) {
-                        showToast("Temperature has been set");
-                    } else {
-                        showToast("ERR: " + x.code());
-                    }
-                });
+                .doOnError(x -> showToast("Couldn't get temperature"))
+                .subscribe(x -> currentTempVal.setText(formatTemperature(x.getTemperature())));
 
         return view;
+    }
+
+    private String formatTemperature(double temperature) {
+        String temperatureString = String.format("%.2f", temperature);
+        return getResources().getString(R.string.one_room_curr_temp, temperatureString);
     }
 
     private void showToast(String text) {

@@ -20,4 +20,5 @@ Phasellus finibus turpis ornare lorem vulputate, ac dignissim massa imperdiet. D
 Praesent porta magna sed leo pulvinar molestie. Proin dictum porta sem euismod suscipit. Sed efficitur mollis augue, ac vestibulum nulla euismod et. Duis tincidunt est eu sem tincidunt hendrerit. Mauris sit amet molestie dui. Integer porta tellus tellus, non semper ante finibus nec. Nunc tempus pretium nisi vel sodales. Morbi facilisis, felis id malesuada dapibus, diam dolor malesuada felis, in luctus ante velit vitae metus. Curabitur faucibus tincidunt mauris quis consequat. Aenean nec sem dictum risus ornare iaculis.
 
 Aliquam vel eros tellus. Aenean ultricies fringilla risus ac consequat. Donec maximus eleifend purus vel sollicitudin. Sed lacus metus, consectetur auctor leo nec, fermentum scelerisque nisl. Donec nisi odio, euismod sed erat ut, tincidunt commodo sem. Cras in auctor augue, quis ullamcorper magna. Nullam vulputate risus quis enim consequat lobortis. Pellentesque non sollicitudin lorem, eu dignissim mi. Integer fermentum ultrices pretium.</string>
+    <string name="one_room_curr_temp">Obecnie %1$s&#8451;</string>
 </resources>
