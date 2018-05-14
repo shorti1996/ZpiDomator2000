@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import zpi.pls.zpidominator2000.Adapters.OneRoomPageAdapter;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.Model.Rooms;
 import zpi.pls.zpidominator2000.R;
 
 
@@ -29,11 +30,11 @@ public class OneRoomFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ROOM_ID = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_ROOM_NAME = "param2";
 
     // TODO: Rename and change types of parameters
     private int roomId;
-    private String mParam2;
+    private String roomName;
 
     private OnOneRoomInteractionListener mListener;
 
@@ -47,13 +48,12 @@ public class OneRoomFragment extends Fragment {
         // Required empty public constructor
     }
 
-    // TODO: Maybe uri or something
-    public static OneRoomFragment newInstance(ZpiApiService zpiApiService, int id) {
+    public static OneRoomFragment newInstance(ZpiApiService zpiApiService, Rooms.Room room) {
         OneRoomFragment fragment = new OneRoomFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_ROOM_ID, id);
+        args.putInt(ARG_ROOM_ID, room.getRoomId());
         fragment.apiService = zpiApiService;
-//        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_ROOM_NAME, room.getName());
         fragment.setArguments(args);
         return fragment;
     }
@@ -63,7 +63,7 @@ public class OneRoomFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             roomId = getArguments().getInt(ARG_ROOM_ID);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
+            roomName = getArguments().getString(ARG_ROOM_NAME);
         }
 
     }
@@ -87,7 +87,7 @@ public class OneRoomFragment extends Fragment {
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        OneRoomSettingsFragment oneRoomSettingsFragment = OneRoomSettingsFragment.newInstance(apiService, roomId);
+        OneRoomSettingsFragment oneRoomSettingsFragment = OneRoomSettingsFragment.newInstance(apiService, roomId, roomName);
         OneRoomStatsFragment oneRoomStatsFragment = OneRoomStatsFragment.newInstance("", "");
         OneRoomPageAdapter adapter = new OneRoomPageAdapter(getFragmentManager());
 //        oneRoomSettingsFragment.setRetainInstance(true);

@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity
 
     private void goToOneRoom(Rooms.Room item) {
         // Create new fragment and transaction
-        Fragment newFragment = OneRoomFragment.newInstance(apiService, item.getRoomId());
+        Fragment newFragment = OneRoomFragment.newInstance(apiService, item);
 //        newFragment.setRetainInstance(true);
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
