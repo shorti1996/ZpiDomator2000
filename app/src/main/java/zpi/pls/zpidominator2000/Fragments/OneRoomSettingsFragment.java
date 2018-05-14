@@ -82,7 +82,7 @@ public class OneRoomSettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_one_room_settings, container, false);
 
-        ((TextView) view.findViewById(R.id.one_room_title)).setText(roomName);
+//        ((TextView) view.findViewById(R.id.one_room_title)).setText(roomName);
 
         RoomTemp roomTemp = new RoomTemp();
         roomTemp.setSetTemperature(12);

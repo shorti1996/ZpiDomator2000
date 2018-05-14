@@ -73,14 +73,15 @@ public class OneRoomFragment extends Fragment {
                              Bundle savedInstanceState) {
 //        Toast.makeText(this.getContext(), roomId, Toast.LENGTH_SHORT).show();
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_one_room, container, false);
+        View view = inflater.inflate(R.layout.fragment_one_room, container, false);
+        titleView = view.findViewById(R.id.one_room_title);
+        titleView.setText(roomName);
+        return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-//        titleView = view.findViewById(R.id.one_room_title);
-//        titleView.setText(roomId);
         viewPager = view.findViewById(R.id.one_room_viewpager);
         setupViewPager(viewPager);
 
