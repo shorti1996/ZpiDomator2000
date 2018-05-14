@@ -9,14 +9,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.jakewharton.rxbinding2.view.RxView;
+
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Response;
 import zpi.pls.zpidominator2000.Adapters.OneRoomLightsAdapter;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.Model.Lights;
@@ -40,6 +46,10 @@ public class OneRoomSettingsFragment extends Fragment {
     private static final String ARG_ROOM_ID = "param1";
     private static final String ARG_ROOM_NAME = "param2";
 
+    private AtomicInteger lightsToUpdateCount = new AtomicInteger(0);
+    private double currTemp;
+    private double newTemp;
+
     // TODO: Rename and change types of parameters
     private int roomId;
     private String mParam2;
@@ -53,7 +63,9 @@ public class OneRoomSettingsFragment extends Fragment {
     public RecyclerView lightsRv;
     public Observable<Long> ping;
     public Disposable pingSubscription;
-    public OneRoomLightsAdapter adapter;
+    public OneRoomLightsAdapter lightsAdapter;
+    public ImageButton tempUp;
+    public ImageButton tempDown;
 
     public OneRoomSettingsFragment() {
         // Required empty public constructor
@@ -95,6 +107,14 @@ public class OneRoomSettingsFragment extends Fragment {
         currentTempVal = view.findViewById(R.id.one_room_current_temp_val);
         lightsRv = view.findViewById(R.id.one_room_light_rv);
         lightsRv.setLayoutManager(new LinearLayoutManager(getContext()));
+        tempDown = view.findViewById(R.id.one_room_temp_down);
+        tempUp = view.findViewById(R.id.one_room_temp_up);
+        Observable<Object> clicksDown = RxView.clicks(tempDown);
+        Observable<Object> clicksUp = RxView.clicks(tempUp);
+        clicksDown.mergeWith(clicksUp)
+                .debounce(1000, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(o -> showToast(getContext(), "TOTOTOTOAS"));
 
 //        RoomTemp roomTemp = new RoomTemp();
 //        roomTemp.setSetTemperature(12);
@@ -142,6 +162,10 @@ public class OneRoomSettingsFragment extends Fragment {
     }
 
     private void updateLights() {
+        if (lightsToUpdateCount.get() > 0) {
+            showToast(getContext(), "Not updating lights, pending changes");
+            return;
+        }
         Observable<Lights> roomLightObservable = apiService.getLightsInRoom(roomId);
         roomLightObservable
                 .observeOn(AndroidSchedulers.mainThread())
@@ -151,15 +175,28 @@ public class OneRoomSettingsFragment extends Fragment {
                     for (Lights.Light light : x.getLights()) {
                         Log.d("LIGHT", light.getName());
                     }
-                    if (adapter == null) {
-                        adapter = new OneRoomLightsAdapter(x, null);
+                    if (lightsAdapter == null) {
+                        lightsAdapter = new OneRoomLightsAdapter(x, this::scheduleUpdateLight);
+                        lightsRv.setAdapter(lightsAdapter);
                     }
-                    lightsRv.setAdapter(adapter);
+                    lightsAdapter.swapValues(x);
+                });
+    }
+
+    private void scheduleUpdateLight(Lights.Light light, boolean enabled) {
+        Observable<Response<Void>> setLightObservable = apiService.setLightInRoom(roomId, light.getId(), enabled);
+        setLightObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnError(throwable -> showToast(getContext(), String.format("Can't set light: %s", throwable.getMessage())))
+                .subscribe(x -> {
+//                    showToast(getContext(), "Light updated");
+                    lightsToUpdateCount.getAndDecrement();
                 });
     }
 
     private String formatTemperature(double temperature) {
-        String temperatureString = String.format("%.2f", temperature);
+        String temperatureString = String.format(Locale.getDefault(), "%.2f", temperature);
         return getResources().getString(R.string.one_room_curr_temp, temperatureString);
     }
 
@@ -193,5 +230,9 @@ public class OneRoomSettingsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Lights.Light light);
+    }
+
+    public interface OnLightStateChangedListener {
+        void onLightStateChanged(Lights.Light light, boolean enabled);
     }
 }

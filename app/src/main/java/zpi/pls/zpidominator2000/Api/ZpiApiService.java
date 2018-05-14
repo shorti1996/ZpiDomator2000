@@ -6,6 +6,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 import zpi.pls.zpidominator2000.Model.Lights;
 import zpi.pls.zpidominator2000.Model.RoomTemp;
 import zpi.pls.zpidominator2000.Model.Rooms;
@@ -27,4 +28,9 @@ public interface ZpiApiService {
 
     @GET("light/{id}")
     Observable<Lights> getLightsInRoom(@Path("id") int id);
+
+    @PUT("light/{id}")
+    Observable<Response<Void>> setLightInRoom(@Path("id") int roomId,
+                                              @Query("lightId") String lightId,
+                                              @Query("state") boolean state);
 }

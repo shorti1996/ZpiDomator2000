@@ -1,7 +1,6 @@
 package zpi.pls.zpidominator2000.Adapters;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +18,10 @@ import zpi.pls.zpidominator2000.R;
  */
 public class OneRoomLightsAdapter extends RecyclerView.Adapter<OneRoomLightsAdapter.ViewHolder> {
 
-    private final List<Lights.Light> mValues;
-    private final OneRoomSettingsFragment.OnFragmentInteractionListener mListener;
+    private List<Lights.Light> mValues;
+    private final OneRoomSettingsFragment.OnLightStateChangedListener mListener;
 
-    public OneRoomLightsAdapter(Lights lights, OneRoomSettingsFragment.OnFragmentInteractionListener listener) {
+    public OneRoomLightsAdapter(Lights lights, OneRoomSettingsFragment.OnLightStateChangedListener listener) {
         mValues = lights.getLights();
         mListener = listener;
     }
@@ -40,23 +39,28 @@ public class OneRoomLightsAdapter extends RecyclerView.Adapter<OneRoomLightsAdap
         holder.mItem = light;
         holder.mNameView.setText(light.getName());
         holder.mSwitch.setChecked(light.getState());
-        holder.mSwitch.setOnCheckedChangeListener((theSwitch, newState) -> {
-            Log.d("AAAAAAA", String.format("LIGHT %s SWITCH: %s", light.getName(), newState));
-//            mListener.onFragmentInteraction(holder.mItem);
-        });
+//        holder.mSwitch.setOnCheckedChangeListener((theSwitch, newState) -> {
+//            mListener.onLightStateChanged(light, newState);
+//        });
+        holder.mSwitch.setOnClickListener(view -> mListener.onLightStateChanged(light, ((Switch) view).isChecked()));
 
-        holder.mView.setOnClickListener(v -> {
-            if (null != mListener) {
-                // Notify the active callbacks interface (the activity, if the
-                // fragment is attached to one) that an item has been selected.
-                mListener.onFragmentInteraction(holder.mItem);
-            }
-        });
+//        holder.mView.setOnClickListener(v -> {
+//            if (null != mListener) {
+//                // Notify the active callbacks interface (the activity, if the
+//                // fragment is attached to one) that an item has been selected.
+//                mListener.onFragmentInteraction(holder.mItem);
+//            }
+//        });
     }
 
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public void swapValues(Lights lights) {
+        mValues = lights.getLights();
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
