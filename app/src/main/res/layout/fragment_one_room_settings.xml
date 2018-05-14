@@ -6,11 +6,12 @@
     tools:context="zpi.pls.zpidominator2000.Fragments.OneRoomSettingsFragment">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/one_room_card_temp"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         app:contentPaddingBottom="8dp"
         app:contentPaddingTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,6 +21,26 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/thermometer_ic"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/thermometer"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/one_room_temp_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Ustawienia temperatury"
+                app:layout_constraintBottom_toBottomOf="@+id/thermometer_ic"
+                app:layout_constraintStart_toEndOf="@+id/thermometer_ic"
+                app:layout_constraintTop_toTopOf="@+id/thermometer_ic" />
 
             <ImageButton
                 android:id="@+id/one_room_temp_up"
@@ -47,12 +68,13 @@
                 android:id="@+id/one_room_temp_val"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="8dp"
                 android:text="22&#8451;"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display2"
                 app:layout_constraintEnd_toStartOf="@+id/spacer_r"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/spacer_l"
+                app:layout_constraintTop_toBottomOf="@+id/thermometer_ic"
                 tools:text="22&#8451;" />
 
             <View
@@ -75,6 +97,70 @@
                 app:layout_constraintStart_toEndOf="@+id/spacer_r"
                 app:layout_constraintTop_toTopOf="@+id/one_room_temp_val"
                 app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp" />
+
+            <TextView
+                android:id="@+id/one_room_current_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="obecnie 21.5&#8451;"
+                app:layout_constraintEnd_toStartOf="@+id/spacer_r"
+                app:layout_constraintStart_toEndOf="@+id/spacer_l"
+                app:layout_constraintTop_toBottomOf="@+id/one_room_temp_val" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/one_room_card_light"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible"
+        app:contentPaddingBottom="8dp"
+        app:contentPaddingTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/one_room_card_temp">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/lightbulb_ic"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/lightbulb"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/one_room_light_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Ustawienia oświetlenia"
+                app:layout_constraintBottom_toBottomOf="@+id/lightbulb_ic"
+                app:layout_constraintStart_toEndOf="@+id/lightbulb_ic"
+                app:layout_constraintTop_toTopOf="@+id/lightbulb_ic" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/one_room_light_rv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lightbulb_ic">
+
+
+            </android.support.v7.widget.RecyclerView>
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
     <!--</android.support.constraint.ConstraintLayout>-->
