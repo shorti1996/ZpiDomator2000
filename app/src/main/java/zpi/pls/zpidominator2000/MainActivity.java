@@ -1,7 +1,9 @@
 package zpi.pls.zpidominator2000;
 
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -31,7 +33,7 @@ import zpi.pls.zpidominator2000.Model.Rooms;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RoomsFragment.OnRoomSelectedListener,
-        OneRoomFragment.OnOneRoomInteractionListener {
+        OneRoomFragment.OnOneRoomInteractionListener, ZpiApiRetrofitClient.OnApiAddressChangedListener {
 
     private static final String ONE_ROOM_BACKSTACK_NAME = "oneRoomFragmentBackstackName";
     private static final String HOME_PLAN_BACKSTACK_NAME = "homePlanFragmentBackstackName";
@@ -70,7 +72,10 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         tabLayout = findViewById(R.id.tabs);
 
-        retrofit = ZpiApiRetrofitClient.getClient();
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
+        String defaultValue = getResources().getString(R.string.setting_api_address_default);
+        String apiAddress = sharedPref.getString(getString(R.string.setting_api_address_key), defaultValue);
+        retrofit = new ZpiApiRetrofitClient(apiAddress, this).getRetrofit();
         apiService = retrofit.create(ZpiApiService.class);
 
         goToHomePlan();
@@ -101,10 +106,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-//        if (id == R.id.nav_rooms) {
-//            goToRooms();
-//            return true;
-//        }
+        if (id == R.id.action_settings) {
+            Intent openSettingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(openSettingsIntent);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -240,5 +246,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onRoomListFragmentInteraction(Rooms.Room item) {
         goToOneRoom(item);
+    }
+
+    @Override
+    public void OnApiAddressChanged() {
+        apiService = retrofit.create(ZpiApiService.class);
     }
 }
