@@ -7,7 +7,21 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.Model.TempHistory;
 import zpi.pls.zpidominator2000.R;
 
 
@@ -24,12 +38,16 @@ public class OneRoomStatsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private final int N_LAST_TEMP_ENTRIES_DEFAULT = 100;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private ZpiApiService apiService;
+    private int roomId;
+    public LineChart tempLineChart;
 
     public OneRoomStatsFragment() {
         // Required empty public constructor
@@ -44,12 +62,14 @@ public class OneRoomStatsFragment extends Fragment {
      * @return A new instance of fragment OneRoomStatsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static OneRoomStatsFragment newInstance(String param1, String param2) {
+    public static OneRoomStatsFragment newInstance(ZpiApiService param1, int param2) {
         OneRoomStatsFragment fragment = new OneRoomStatsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putString(ARG_PARAM1, param1);
+//        args.putString(ARG_PARAM2, param2);
+//        fragment.setArguments(args);
+        fragment.apiService = param1;
+        fragment.roomId = param2;
         return fragment;
     }
 
@@ -66,7 +86,30 @@ public class OneRoomStatsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_one_room_stats, container, false);
+        View view = inflater.inflate(R.layout.fragment_one_room_stats, container, false);
+        tempLineChart = view.findViewById(R.id.one_room_stats_temp_line_chart);
+
+        Observable<TempHistory> tempHistoryObservable = apiService.getTempHistoryForRoom(roomId, N_LAST_TEMP_ENTRIES_DEFAULT);
+
+        tempHistoryObservable
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .doOnError(x -> Toast.makeText(getContext(), "Couldn't load temp history", Toast.LENGTH_SHORT).show())
+                .onErrorReturnItem(new TempHistory())
+                .subscribe((TempHistory tempHistory) -> {
+                    List<Entry> entries = new ArrayList<>();
+                    List<Integer> temperatureHistory = tempHistory.getTemperatureHistory();
+                    for (int i = 0; i < temperatureHistory.size(); i++) {
+                        Integer historyEntry = temperatureHistory.get(i);
+//                        Log.d("AA", "" + historyEntry);
+                        entries.add(new Entry(i, historyEntry));
+                    }
+                    LineDataSet lineDataSet = new LineDataSet(entries, "Temperatura");
+                    LineData lineData = new LineData(lineDataSet);
+                    tempLineChart.setData(lineData);
+                    tempLineChart.invalidate();
+                });
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

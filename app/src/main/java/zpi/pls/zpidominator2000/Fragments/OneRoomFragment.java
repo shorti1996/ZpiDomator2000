@@ -90,7 +90,7 @@ public class OneRoomFragment extends Fragment {
 
     private void setupViewPager(ViewPager viewPager) {
         OneRoomSettingsFragment oneRoomSettingsFragment = OneRoomSettingsFragment.newInstance(apiService, roomId, roomName);
-        OneRoomStatsFragment oneRoomStatsFragment = OneRoomStatsFragment.newInstance("", "");
+        OneRoomStatsFragment oneRoomStatsFragment = OneRoomStatsFragment.newInstance(apiService, roomId);
         adapter = new OneRoomPageAdapter(getFragmentManager());
 //        oneRoomSettingsFragment.setRetainInstance(true);
 //        oneRoomStatsFragment.setRetainInstance(true);

@@ -88,11 +88,11 @@ public class HomePlanFragment extends Fragment {
 
         homePlanIv = getView().findViewById(R.id.homeFromAboveIv);
         rootView = getView().findViewById(R.id.ConstraintLayoutRoot);
-//        floorText = getView().findViewById(R.id.floorTv);
+        floorText = getView().findViewById(R.id.floorTv);
         homeName = getView().findViewById(R.id.home_name);
-        homePlanIv.setOnClickListener(view1 -> {
+/*        homePlanIv.setOnClickListener(view1 -> {
             swapFloor();
-        });
+        });*/
 
         loadFloor(isOnZeroFloor);
     }
