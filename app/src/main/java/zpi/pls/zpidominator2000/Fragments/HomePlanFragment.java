@@ -6,12 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import zpi.pls.zpidominator2000.R;
 
@@ -85,25 +86,26 @@ public class HomePlanFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         homePlanIv = getView().findViewById(R.id.homeFromAboveIv);
-        homePlanIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isOnZeroFloor = !isOnZeroFloor;
-                updateFloor(isOnZeroFloor);
-            }
-        });
         rootView = getView().findViewById(R.id.ConstraintLayoutRoot);
         floorText = getView().findViewById(R.id.floorTv);
+        homePlanIv.setOnClickListener(view1 -> {
+            isOnZeroFloor = !isOnZeroFloor;
+            loadFloor(isOnZeroFloor);
+        });
+
+        loadFloor(isOnZeroFloor);
     }
 
-    private void updateFloor(boolean isOnZeroFloor) {
-        if (isOnZeroFloor) {
-            homePlanIv.setImageResource(R.drawable.home_plan);
-            rootView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorHomeGreenBg));
+    private void loadFloor(boolean isOnGroundFloor) {
+        if (isOnGroundFloor) {
+            Glide.with(this)
+                    .load(R.drawable.parter)
+                    .into(homePlanIv);
             floorText.setText(R.string.ground_floor);
         } else {
-            homePlanIv.setImageResource(R.drawable.home_1st);
-            rootView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorHomeBlueBg));
+            Glide.with(this)
+                    .load(R.drawable.pietro1)
+                    .into(homePlanIv);
             floorText.setText(R.string.first_floor);
         }
     }
