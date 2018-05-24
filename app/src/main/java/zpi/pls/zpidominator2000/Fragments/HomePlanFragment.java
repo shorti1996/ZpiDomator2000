@@ -38,6 +38,7 @@ public class HomePlanFragment extends Fragment {
     ImageView homePlanIv;
     ConstraintLayout rootView;
     TextView floorText;
+    TextView homeName;
 
     boolean isOnZeroFloor = true;
 
@@ -87,12 +88,17 @@ public class HomePlanFragment extends Fragment {
 
         homePlanIv = getView().findViewById(R.id.homeFromAboveIv);
         rootView = getView().findViewById(R.id.ConstraintLayoutRoot);
-        floorText = getView().findViewById(R.id.floorTv);
+//        floorText = getView().findViewById(R.id.floorTv);
+        homeName = getView().findViewById(R.id.home_name);
         homePlanIv.setOnClickListener(view1 -> {
-            isOnZeroFloor = !isOnZeroFloor;
-            loadFloor(isOnZeroFloor);
+            swapFloor();
         });
 
+        loadFloor(isOnZeroFloor);
+    }
+
+    public void swapFloor() {
+        isOnZeroFloor = !isOnZeroFloor;
         loadFloor(isOnZeroFloor);
     }
 
@@ -101,12 +107,14 @@ public class HomePlanFragment extends Fragment {
             Glide.with(this)
                     .load(R.drawable.parter)
                     .into(homePlanIv);
-            floorText.setText(R.string.ground_floor);
+//            floorText.setText(R.string.ground_floor);
+            homeName.setText(R.string.ground_floor);
         } else {
             Glide.with(this)
                     .load(R.drawable.pietro1)
                     .into(homePlanIv);
-            floorText.setText(R.string.first_floor);
+//            floorText.setText(R.string.first_floor);
+            homeName.setText(R.string.first_floor);
         }
     }
 
@@ -147,5 +155,9 @@ public class HomePlanFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public interface HomePlanFragmentInteractionListener {
+        void onSwapFloor();
     }
 }

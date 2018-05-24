@@ -33,7 +33,9 @@ import zpi.pls.zpidominator2000.Model.Rooms;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RoomsFragment.OnRoomSelectedListener,
-        OneRoomFragment.OnOneRoomInteractionListener, ZpiApiRetrofitClient.OnApiAddressChangedListener {
+        OneRoomFragment.OnOneRoomInteractionListener,
+        ZpiApiRetrofitClient.OnApiAddressChangedListener,
+        HomePlanFragment.HomePlanFragmentInteractionListener {
 
     private static final String ONE_ROOM_BACKSTACK_NAME = "oneRoomFragmentBackstackName";
     private static final String HOME_PLAN_BACKSTACK_NAME = "homePlanFragmentBackstackName";
@@ -44,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     private TabLayout tabLayout;
     private Retrofit retrofit;
     private ZpiApiService apiService;
+    public HomePlanFragment homePlanFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +55,20 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> {
+        FloatingActionButton fab1 = findViewById(R.id.fab1);
+        fab1.setOnClickListener(view -> {
             popEntireBackstack();
             Snackbar.make(view, "Witaj w domku", Snackbar.LENGTH_SHORT)
 //                        .setAction("Action", this)
                     .show();
             goToHomePlan();
+        });
+        FloatingActionButton fab2 = findViewById(R.id.fab2);
+        fab2.setOnClickListener(view -> {
+            onSwapFloor();
+            if (homePlanFragment != null) {
+                homePlanFragment.swapFloor();
+            }
         });
 
         drawerLayout = findViewById(R.id.drawer_layout);
@@ -117,13 +127,13 @@ public class MainActivity extends AppCompatActivity
 
     private void goToHomePlan() {
         // Create new fragment and transaction
-        Fragment newFragment = new HomePlanFragment();
+        homePlanFragment = new HomePlanFragment();
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         // Replace whatever is in the fragment_container view with this fragment,
         // and add the transaction to the back stack
-        transaction.replace(R.id.fragmentsContainer, newFragment);
+        transaction.replace(R.id.fragmentsContainer, homePlanFragment);
 //        transaction.addToBackStack(null);
 //        if (fragmentManager.getBackStackEntryCount() == 0) {
 //            transaction.addToBackStack(HOME_PLAN_BACKSTACK_NAME);
@@ -251,5 +261,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void OnApiAddressChanged() {
         apiService = retrofit.create(ZpiApiService.class);
+    }
+
+    @Override
+    public void onSwapFloor() {
+
     }
 }
