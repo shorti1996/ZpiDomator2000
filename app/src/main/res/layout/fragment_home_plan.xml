@@ -163,23 +163,23 @@
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
-    <ImageView
-        android:id="@+id/homeFromAboveIv"
+    <include
+        android:id="@+id/include_floor"
+        layout="@layout/parter_layout"
         android:layout_width="350dp"
         android:layout_height="350dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardViewWeatherOutside" />
+        app:layout_constraintTop_toBottomOf="@+id/cardViewFloorInfo" />
 
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintRight_toRightOf="@id/cardViewName"
-        app:layout_constraintTop_toTopOf="@id/homeFromAboveIv">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardViewWeatherOutside">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="wrap_content"
