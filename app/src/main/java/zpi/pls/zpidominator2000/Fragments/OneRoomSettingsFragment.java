@@ -165,7 +165,7 @@ public class OneRoomSettingsFragment extends Fragment {
     private void commitSetTemp() {
         Log.d(TAG, "Attempting to commit temperature to api");
         RoomTemp roomTemp = new RoomTemp();
-        roomTemp.setSetTemperature((int) getNewTemp());
+        roomTemp.setSetTemperature(getNewTemp());
         Observable<Response<Void>> setTempInRoomObservable = apiService.setTempInRoom(roomId, roomTemp);
 
         setTempInRoomObservable

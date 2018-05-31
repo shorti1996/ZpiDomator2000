@@ -9,6 +9,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import zpi.pls.zpidominator2000.Model.HouseTemp;
 import zpi.pls.zpidominator2000.Model.Lights;
+import zpi.pls.zpidominator2000.Model.OutsideTemp;
 import zpi.pls.zpidominator2000.Model.Power;
 import zpi.pls.zpidominator2000.Model.RoomTemp;
 import zpi.pls.zpidominator2000.Model.Rooms;
@@ -25,6 +26,9 @@ public interface ZpiApiService {
 
     @GET("temp")
     Observable<HouseTemp> getHouseTemp();
+
+    @GET("temp/outside")
+    Observable<OutsideTemp> getOutsideTemp();
 
     @GET("temp/{id}")
     Observable<RoomTemp> getTempInRoom(@Path("id") int id);

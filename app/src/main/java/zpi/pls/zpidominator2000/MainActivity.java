@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity
 
     private void goToHomePlan() {
         // Create new fragment and transaction
-        homePlanFragment = HomePlanFragment.newInstance("","", apiService);
+        homePlanFragment = HomePlanFragment.newInstance("","", apiService, this);
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
