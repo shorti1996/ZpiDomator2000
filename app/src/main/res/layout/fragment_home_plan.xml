@@ -97,6 +97,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ProgressBar
+                android:id="@+id/progressBar_room_card"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_room"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/floor_info_room_name"
                 android:layout_width="wrap_content"
@@ -110,7 +125,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline_room"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/floor_info_room_settemp_label"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="Pokój 1" />
 
             <TextView
@@ -171,6 +186,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.26" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_room"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="floor_info_room_temp,floor_info_room_settemp_label,floor_info_room_settemp,floor_info_room_temp_label" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
@@ -179,6 +200,7 @@
         android:layout_width="0dp"
         android:layout_height="80dp"
         android:layout_marginTop="8dp"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@+id/cardViewName"
         app:layout_constraintStart_toStartOf="@+id/cardViewName"
         app:layout_constraintTop_toBottomOf="@+id/cardViewName">
@@ -186,6 +208,21 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/progressBar_floor_card"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_floor"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/floor_info_idunno_name"
@@ -221,6 +258,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="@+id/guideline_floor"
                 app:layout_constraintTop_toBottomOf="@+id/floor_info_floor_temp_label"
+                app:layout_constraintVertical_bias="0.0"
                 tools:text="21.3 °C" />
 
             <TextView
@@ -254,6 +292,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.26" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_floor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="floor_info_outside_temp_val,floor_info_outside_temp_label,floor_info_floor_temp,floor_info_floor_temp_label" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 

@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Group;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -63,6 +65,10 @@ public class HomePlanFragment extends Fragment {
     private List<Rooms.Room> roomList;
     private TextView roomName;
     private RoomsFragment.OnRoomSelectedListener onRoomSelectedListener;
+    private Group floorGroup;
+    private Group roomGroup;
+    private ProgressBar floorProgressBar;
+    private ProgressBar roomProgressBar;
 
     public HomePlanFragment() {
         // Required empty public constructor
@@ -121,9 +127,14 @@ public class HomePlanFragment extends Fragment {
         roomInfoCard = view.findViewById(R.id.cardViewRoomInfo);
         floorTemp = view.findViewById(R.id.floor_info_floor_temp);
         outsideTemp = view.findViewById(R.id.floor_info_outside_temp_val);
+        floorGroup = view.findViewById(R.id.group_floor);
+        floorProgressBar = view.findViewById(R.id.progressBar_floor_card);
+
         roomTemp = view.findViewById(R.id.floor_info_room_temp);
         roomSetTemp = view.findViewById(R.id.floor_info_room_settemp);
         roomName = view.findViewById(R.id.floor_info_room_name);
+        roomGroup = view.findViewById(R.id.group_room);
+        roomProgressBar = view.findViewById(R.id.progressBar_room_card);
 
         loadRooms();
         loadFloor(isOnZeroFloor);
@@ -142,29 +153,31 @@ public class HomePlanFragment extends Fragment {
     private void showFloorInfoCard() {
         floorInfoCard.setVisibility(View.VISIBLE);
         roomInfoCard.setVisibility(View.INVISIBLE);
+        floorGroup.setVisibility(View.GONE);
+        floorProgressBar.setVisibility(View.VISIBLE);
 
         apiService.getHouseTemp()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .onErrorResumeNext(throwable -> {Utils.showToast(getContext(), "Couldn't update house temp");})
-                .doOnNext(houseTemp -> {
-//                    Log.d("ASAA", "" + houseTemp.getHouseTemperature());
+                .onErrorResumeNext(throwable -> {
+                    Utils.showToast(getContext(), "Couldn't update house temp");
+                })
+                .zipWith(apiService.getOutsideTemp().subscribeOn(Schedulers.io()), (houseTemp, outsideTemp) -> {
                     floorTemp.setText(String.format("%.1f °C", houseTemp.getHouseTemperature()));
-                }).subscribe();
-
-        apiService.getOutsideTemp()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .onErrorResumeNext(throwable -> {Utils.showToast(getContext(), "Couldn't update house temp");})
-                .doOnNext(outsideTemp -> {
                     HomePlanFragment.this.outsideTemp.setText(String.format("%.1f °C", outsideTemp.getTemperature()));
-                }).subscribe();
+                    floorGroup.setVisibility(View.VISIBLE);
+                    floorProgressBar.setVisibility(View.GONE);
+                    return true;
+                })
+                .subscribe();
     }
 
     @SuppressLint("DefaultLocale")
     private void showRoomInfoCard(Rooms.Room room) {
         floorInfoCard.setVisibility(View.INVISIBLE);
         roomInfoCard.setVisibility(View.VISIBLE);
+        roomGroup.setVisibility(View.GONE);
+        roomProgressBar.setVisibility(View.VISIBLE);
         if (onRoomSelectedListener != null) {
             roomInfoCard.setOnClickListener(v -> {
                 onRoomSelectedListener.onRoomListFragmentInteraction(room);
@@ -179,6 +192,8 @@ public class HomePlanFragment extends Fragment {
                 .doOnNext(roomTemp -> {
                     HomePlanFragment.this.roomTemp.setText(String.format("%.1f °C", roomTemp.getTemperature()));
                     roomSetTemp.setText(String.format("%.1f °C", roomTemp.getSetTemperature()));
+                    roomProgressBar.setVisibility(View.GONE);
+                    roomGroup.setVisibility(View.VISIBLE);
                 }).subscribe();
     }
 
