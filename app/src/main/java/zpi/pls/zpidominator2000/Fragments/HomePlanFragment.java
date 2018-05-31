@@ -162,7 +162,9 @@ public class HomePlanFragment extends Fragment {
                 .onErrorResumeNext(throwable -> {
                     Utils.showToast(getContext(), "Couldn't update house temp");
                 })
-                .zipWith(apiService.getOutsideTemp().subscribeOn(Schedulers.io()), (houseTemp, outsideTemp) -> {
+                .zipWith(apiService.getOutsideTemp()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread()), (houseTemp, outsideTemp) -> {
                     floorTemp.setText(String.format("%.1f °C", houseTemp.getHouseTemperature()));
                     HomePlanFragment.this.outsideTemp.setText(String.format("%.1f °C", outsideTemp.getTemperature()));
                     floorGroup.setVisibility(View.VISIBLE);
