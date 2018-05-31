@@ -3,17 +3,20 @@ package zpi.pls.zpidominator2000.Fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+
 import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.Utils;
 
 
 /**
@@ -37,6 +40,7 @@ public class HomePlanFragment extends Fragment {
     ImageView homePlanIv;
     ConstraintLayout rootView;
     TextView floorText;
+    TextView homeName;
 
     boolean isOnZeroFloor = true;
 
@@ -74,37 +78,86 @@ public class HomePlanFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home_plan, container, false);
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        homePlanIv = getView().findViewById(R.id.homeFromAboveIv);
-        homePlanIv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                isOnZeroFloor = !isOnZeroFloor;
-                updateFloor(isOnZeroFloor);
-            }
-        });
-        rootView = getView().findViewById(R.id.ConstraintLayoutRoot);
-        floorText = getView().findViewById(R.id.floorTv);
+        rootView = view.findViewById(R.id.ConstraintLayoutRoot);
+        floorText = view.findViewById(R.id.floorTv);
+        homeName = view.findViewById(R.id.home_name);
+/*        homePlanIv.setOnClickListener(view1 -> {
+            swapFloor();
+        });*/
+        loadFloor(isOnZeroFloor);
+
     }
 
-    private void updateFloor(boolean isOnZeroFloor) {
-        if (isOnZeroFloor) {
-            homePlanIv.setImageResource(R.drawable.home_plan);
-            rootView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorHomeGreenBg));
-            floorText.setText(R.string.ground_floor);
-        } else {
-            homePlanIv.setImageResource(R.drawable.home_1st);
-            rootView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorHomeBlueBg));
-            floorText.setText(R.string.first_floor);
+    public void swapFloor() {
+        isOnZeroFloor = !isOnZeroFloor;
+        loadFloor(isOnZeroFloor);
+    }
+
+    private void loadFloor(boolean isOnGroundFloor) {
+        View view = getView();
+        if (view != null) {
+            ViewGroup floor_content = view.findViewById(R.id.include_floor);
+            floor_content.removeAllViews();
+            if (isOnGroundFloor) {
+                getLayoutInflater().inflate(R.layout.parter_layout, floor_content);
+                homePlanIv = view.findViewById(R.id.homeFromAboveIv);
+                Glide.with(this)
+                        .load(R.drawable.parter)
+                        .into(homePlanIv);
+                homeName.setText(R.string.ground_floor);
+
+                view.findViewById(R.id.button_parter1_1).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "1");
+                });
+                view.findViewById(R.id.button_parter1_2).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "1");
+                });
+                view.findViewById(R.id.button_parter2).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "2");
+                });
+                view.findViewById(R.id.button_parter3).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "3");
+                });
+                view.findViewById(R.id.button_parter4).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "4");
+                });
+                view.findViewById(R.id.button_parter5).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "5");
+                });
+            } else {
+                getLayoutInflater().inflate(R.layout.pietro1_layout, floor_content);
+                homePlanIv = view.findViewById(R.id.homeFromAboveIv);
+                Glide.with(this)
+                        .load(R.drawable.pietro1)
+                        .into(homePlanIv);
+                homeName.setText(R.string.first_floor);
+
+                view.findViewById(R.id.button_pietro1_1).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "1");
+                });
+                view.findViewById(R.id.button_pietro1_2).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "2");
+                });
+                view.findViewById(R.id.button_pietro1_3).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "3");
+                });
+                view.findViewById(R.id.button_pietro1_4).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "4");
+                });
+                view.findViewById(R.id.button_pietro1_5).setOnClickListener(v -> {
+                    Utils.showToast(getContext(), "5");
+                });
+            }
         }
     }
 
@@ -145,5 +198,9 @@ public class HomePlanFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public interface HomePlanFragmentInteractionListener {
+        void onSwapFloor();
     }
 }

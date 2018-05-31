@@ -80,11 +80,13 @@ public class RoomsFragment extends Fragment {
             }
 //            recyclerView.setAdapter(new MyRoomItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
             Observable<Rooms> roomsObservable = apiService.listRooms();
-
             roomsObservable
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
-                    .doOnError(x -> Toast.makeText(getContext(), "Couldn't load rooms", Toast.LENGTH_SHORT).show())
+                    .doOnError(x -> {
+                        Log.d("AA", x.getMessage());
+                        Toast.makeText(getContext(), "Couldn't load rooms", Toast.LENGTH_SHORT).show();
+                    })
                     .onErrorReturnItem(new Rooms())
                     .subscribe((Rooms rooms) -> {
                         for (Rooms.Room r : rooms.getRooms()) {

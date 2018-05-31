@@ -10,6 +10,7 @@ import retrofit2.http.Query;
 import zpi.pls.zpidominator2000.Model.Lights;
 import zpi.pls.zpidominator2000.Model.RoomTemp;
 import zpi.pls.zpidominator2000.Model.Rooms;
+import zpi.pls.zpidominator2000.Model.TempHistory;
 
 /**
  * Created by wojciech.liebert on 13.05.2018.
@@ -25,6 +26,9 @@ public interface ZpiApiService {
 
     @PUT("temp/{id}")
     Observable<Response<Void>> setTempInRoom(@Path("id") int id, @Body RoomTemp roomTemp);
+
+    @GET("temp/{id}/history/{nLast}")
+    Observable<TempHistory> getTempHistoryForRoom(@Path("id") int id, @Path("nLast") int nLastEntries);
 
     @GET("light/{id}")
     Observable<Lights> getLightsInRoom(@Path("id") int id);

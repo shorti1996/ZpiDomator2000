@@ -28,24 +28,38 @@
     </android.support.design.widget.AppBarLayout>
 
     <!--<include layout="@layout/content_main" />-->
-    <FrameLayout android:id="@+id/fragmentsContainer"
-        android:layout_height="match_parent"
+    <FrameLayout
+        android:id="@+id/fragmentsContainer"
         android:layout_width="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
+        android:layout_height="match_parent"
+        app:layout_anchor="@+id/fab2"
+        app:layout_anchorGravity="left|center"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <!--<fragment clazpi.pls.zpidominator2000.Fragments.HomePlanFragmentment"-->
-            <!--android:id="@+id/homePlanFragment"-->
-            <!--android:layout_width="match_parent" android:layout_height="match_parent"-->
-            <!--/>-->
+        <!--android:id="@+id/homePlanFragment"-->
+        <!--android:layout_width="match_parent" android:layout_height="match_parent"-->
+        <!--/>-->
     </FrameLayout>
 
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/fab1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_home_white_24dp" />
+        app:srcCompat="@drawable/ic_home_white_24dp"
+        app:useCompatPadding="true" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        app:layout_anchor="@id/fab1"
+        app:layout_anchorGravity="bottom|left"
+        app:srcCompat="@drawable/ic_swap_vert_white_24dp"
+        app:useCompatPadding="true" />
 
 </android.support.design.widget.CoordinatorLayout>

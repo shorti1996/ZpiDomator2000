@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/pietro1_layour_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteY="81dp">
+
+    <ImageView
+        android:id="@+id/homeFromAboveIv"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/button_pietro1_1"
+        android:layout_width="39dp"
+        android:layout_height="53dp"
+        android:layout_marginStart="108dp"
+        android:layout_marginTop="168dp"
+        android:background="@android:color/transparent"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
+        app:layout_constraintTop_toTopOf="@+id/homeFromAboveIv" />
+
+    <ImageView
+        android:id="@+id/button_pietro1_2"
+        android:layout_width="30dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="118dp"
+        android:layout_marginTop="104dp"
+        android:background="@android:color/transparent"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
+        app:layout_constraintTop_toTopOf="@+id/homeFromAboveIv" />
+
+    <ImageView
+        android:id="@+id/button_pietro1_3"
+        android:layout_width="26dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="92dp"
+        android:layout_marginTop="104dp"
+        android:background="@android:color/transparent"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
+        app:layout_constraintTop_toTopOf="@+id/homeFromAboveIv" />
+
+    <ImageView
+        android:id="@+id/button_pietro1_4"
+        android:layout_width="36dp"
+        android:layout_height="47dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="104dp"
+        android:background="@android:color/transparent"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
+        app:layout_constraintTop_toTopOf="@+id/homeFromAboveIv" />
+
+    <ImageView
+        android:id="@+id/button_pietro1_5"
+        android:layout_width="49dp"
+        android:layout_height="63dp"
+        android:layout_marginStart="56dp"
+        android:layout_marginTop="160dp"
+        android:background="@android:color/transparent"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
+        app:layout_constraintTop_toTopOf="@+id/homeFromAboveIv" />
+
+</android.support.constraint.ConstraintLayout>
