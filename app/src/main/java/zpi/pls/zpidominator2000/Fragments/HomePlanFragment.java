@@ -203,25 +203,22 @@ public class HomePlanFragment extends Fragment {
                 homeName.setText(R.string.ground_floor);
 
                 view.findViewById(R.id.button_parter1_1).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "1");
-                    if (roomList != null) {
-                        showRoomInfoCard(roomList.get(0));
-                    }
+                    goToRoom(0);
                 });
                 view.findViewById(R.id.button_parter1_2).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "1");
+                    goToRoom(0);
                 });
                 view.findViewById(R.id.button_parter2).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "2");
+                    goToRoom(1);
                 });
                 view.findViewById(R.id.button_parter3).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "3");
+                    goToRoom(2);
                 });
                 view.findViewById(R.id.button_parter4).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "4");
+                    goToRoom(3);
                 });
                 view.findViewById(R.id.button_parter5).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "5");
+                    goToRoom(4);
                 });
             } else {
                 getLayoutInflater().inflate(R.layout.pietro1_layout, floor_content);
@@ -232,21 +229,27 @@ public class HomePlanFragment extends Fragment {
                 homeName.setText(R.string.first_floor);
 
                 view.findViewById(R.id.button_pietro1_1).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "1");
+                    goToRoom(5);
                 });
                 view.findViewById(R.id.button_pietro1_2).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "2");
+                    goToRoom(6);
                 });
                 view.findViewById(R.id.button_pietro1_3).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "3");
+                    goToRoom(7);
                 });
                 view.findViewById(R.id.button_pietro1_4).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "4");
+                    goToRoom(8);
                 });
                 view.findViewById(R.id.button_pietro1_5).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "5");
+                    goToRoom(9);
                 });
             }
+        }
+    }
+
+    private void goToRoom(int index) {
+        if (roomList != null) {
+            showRoomInfoCard(roomList.get(index));
         }
     }
 
