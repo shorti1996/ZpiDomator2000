@@ -8,4 +8,8 @@ import android.support.v4.app.Fragment;
 
 public class DetectingVisibilityFragment extends Fragment {
     private boolean isVisibleToUser = true;
+
+    public boolean isVisibleToUser() {
+        return isVisibleToUser;
+    }
 }

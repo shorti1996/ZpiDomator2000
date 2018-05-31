@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,9 +19,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import retrofit2.Retrofit;
 import zpi.pls.zpidominator2000.Api.ZpiApiRetrofitClient;
@@ -36,6 +41,19 @@ public class MainActivity extends AppCompatActivity
         OneRoomFragment.OnOneRoomInteractionListener,
         ZpiApiRetrofitClient.OnApiAddressChangedListener,
         HomePlanFragment.HomePlanFragmentInteractionListener {
+
+    @IntDef(HOME)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MainActivityDrawerState {
+    }
+
+    public interface MainActivityDrawerUpdateListener {
+        void onDrawerUpdate(MainActivityDrawerState state);
+    }
+
+    public static final int HOME = 0;
+    public static final int ROOMS = 1;
+    public static final int ONE_ROOM = 2;
 
     private static final String ONE_ROOM_BACKSTACK_NAME = "oneRoomFragmentBackstackName";
     private static final String HOME_PLAN_BACKSTACK_NAME = "homePlanFragmentBackstackName";
@@ -88,7 +106,23 @@ public class MainActivity extends AppCompatActivity
         retrofit = new ZpiApiRetrofitClient(apiAddress, this).getRetrofit();
         apiService = retrofit.create(ZpiApiService.class);
 
+        getSupportFragmentManager().addOnBackStackChangedListener(this::updateNavDrawer);
         goToHomePlan();
+    }
+
+    private void updateNavDrawer() {
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+        if (backStackEntryCount == 0) {
+            getDrawerView().setCheckedItem(R.id.nav_home);
+        }
+//        else {
+//            android.support.v4.app.FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(backStackEntryCount - 1);
+//            String tag = backStackEntry.getName();
+//            Fragment fragment = fragmentManager.findFragmentByTag(tag);
+//            int x = 0;
+//        }
+
     }
 
     @Override
@@ -126,6 +160,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void goToHomePlan() {
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        Log.d("BACKSTACK", "" + getSupportFragmentManager().getBackStackEntryCount());
         // Create new fragment and transaction
         homePlanFragment = HomePlanFragment.newInstance("","", apiService, this);
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
