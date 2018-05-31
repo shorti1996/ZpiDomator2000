@@ -20,11 +20,15 @@ import com.github.mikephil.charting.data.LineDataSet;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.Model.TempHistory;
 import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.Utils;
 
 
 /**
@@ -172,20 +176,41 @@ public class OneRoomStatsFragment extends Fragment {
     }
 
     private void loadTemp() {
-        Observable<TempHistory> tempHistoryObservableMonth = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_MONTH);
+        Observable<TempHistory> tempHistoryObservableMonth = apiService.getTempHistoryForRoom(roomId, 10);
         Observable<TempHistory> tempHistoryObservableDay = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
 
-        List<Double> tempDay = Sine.generate(100, 1f);
-        List<Double> tempMonth = Sine.generate(300, 1f);
+//        List<Double> tempDay = Sine.generate(100, 1f);
+//        List<Double> tempMonth = Sine.generate(300, 1f);
+//        loadToChart(chart1, tempDay, "Temperatura");
+//        loadToChart(chart2, tempMonth, "Temperatura");
 
         resetChartData(chart1);
         resetChartData(chart2);
 
-        loadToChart(chart1, tempDay, "Temperatura");
-        loadToChart(chart2, tempMonth, "Temperatura");
 
         chart1Title.setText("Temperatura 24 h");
         chart2Title.setText("Temperatura 7 dni");
+
+        tempHistoryObservableDay
+                .timeout(10, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(tempHistoryDay -> {
+                    loadToChart(chart1, tempHistoryDay.getTemperatureHistory(), "Temperatura");
+                })
+                .concatWith(tempHistoryObservableMonth
+                        .timeout(10, TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(tempHistoryMonth -> {
+                            loadToChart(chart2, tempHistoryMonth.getTemperatureHistory(), "Temperatura");
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> {
+                    Utils.showToast(getContext(), "BAD");
+                })
+                .subscribe();
     }
 
     private void loadLight() {

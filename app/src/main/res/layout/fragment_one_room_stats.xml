@@ -3,80 +3,78 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:fillViewport="true"
     tools:context="zpi.pls.zpidominator2000.Fragments.OneRoomStatsFragment">
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/chart_1_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Temperatura 24h"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/one_room_stats_charts_spinner" />
-
-        <!-- TODO: Update blank fragment layout -->
-        <TextView
-            android:id="@+id/textView2"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="ONE ROOM STATS"
-            android:visibility="gone" />
+            android:layout_height="wrap_content">
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/one_room_stats_temp_day_line_chart"
-            android:layout_width="0dp"
-            android:layout_height="300dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chart_1_title" />
+            <TextView
+                android:id="@+id/chart_1_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Temperatura 24h"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/one_room_stats_charts_spinner" />
 
-        <TextView
-            android:id="@+id/chart_2_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Temperatura 7 dni"
-            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/one_room_stats_temp_day_line_chart" />
+            <!-- TODO: Update blank fragment layout -->
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="ONE ROOM STATS"
+                android:visibility="gone" />
 
-        <com.github.mikephil.charting.charts.LineChart
-            android:id="@+id/one_room_stats_temp_month_line_chart"
-            android:layout_width="0dp"
-            android:layout_height="300dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/chart_2_title"/>
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/one_room_stats_temp_day_line_chart"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/chart_1_title" />
 
-        <Spinner
-            android:id="@+id/one_room_stats_charts_spinner"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="64dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:entries="@array/stats_spinner_array"
-            app:layout_constraintBottom_toTopOf="@+id/chart_1_title"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <TextView
+                android:id="@+id/chart_2_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Temperatura 7 dni"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/one_room_stats_temp_day_line_chart" />
 
-        <!--spacer-->
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/one_room_stats_temp_month_line_chart" />
-    </android.support.constraint.ConstraintLayout>
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/one_room_stats_temp_month_line_chart"
+                android:layout_width="0dp"
+                android:layout_height="300dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/chart_2_title" />
 
+            <Spinner
+                android:id="@+id/one_room_stats_charts_spinner"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="64dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:entries="@array/stats_spinner_array"
+                app:layout_constraintBottom_toTopOf="@+id/chart_1_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!--spacer-->
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/one_room_stats_temp_month_line_chart" />
+        </android.support.constraint.ConstraintLayout>
 </android.support.v4.widget.NestedScrollView>
