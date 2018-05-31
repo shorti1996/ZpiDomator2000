@@ -20,6 +20,21 @@
                 app:layout_constraintTop_toBottomOf="@+id/one_room_stats_charts_spinner" />
 
             <!-- TODO: Update blank fragment layout -->
+            <ProgressBar
+                android:id="@+id/progressBar_stats_1"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/one_room_stats_temp_day_line_chart"
+                app:layout_constraintEnd_toEndOf="@+id/one_room_stats_temp_day_line_chart"
+                app:layout_constraintStart_toStartOf="@+id/one_room_stats_temp_day_line_chart"
+                app:layout_constraintTop_toTopOf="@+id/one_room_stats_temp_day_line_chart" />
+
             <TextView
                 android:id="@+id/textView2"
                 android:layout_width="match_parent"
@@ -47,6 +62,17 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/one_room_stats_temp_day_line_chart" />
+
+            <ProgressBar
+                android:id="@+id/progressBar_stats_2"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/one_room_stats_temp_month_line_chart"
+                app:layout_constraintLeft_toLeftOf="@+id/one_room_stats_temp_month_line_chart"
+                app:layout_constraintRight_toRightOf="@+id/one_room_stats_temp_month_line_chart"
+                app:layout_constraintTop_toTopOf="@+id/one_room_stats_temp_month_line_chart" />
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/one_room_stats_temp_month_line_chart"

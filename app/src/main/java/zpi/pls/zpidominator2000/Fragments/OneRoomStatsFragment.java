@@ -3,12 +3,14 @@ package zpi.pls.zpidominator2000.Fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -60,11 +62,15 @@ public class OneRoomStatsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private ZpiApiService apiService;
     private int roomId;
+
     public LineChart chart1;
     public LineChart chart2;
     private TextView chart1Title;
     private TextView chart2Title;
     private Spinner spinner;
+    private ProgressBar progressBar2;
+    private ProgressBar progressBar1;
+
     private ArrayAdapter<String> spinnerAdapter;
     private String[] spinnerItems;
 
@@ -107,7 +113,9 @@ public class OneRoomStatsFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_one_room_stats, container, false);
         chart1 = view.findViewById(R.id.one_room_stats_temp_day_line_chart);
+        chart1.setVisibility(View.INVISIBLE);
         chart2 = view.findViewById(R.id.one_room_stats_temp_month_line_chart);
+        chart2.setVisibility(View.INVISIBLE);
         chart1Title = view.findViewById(R.id.chart_1_title);
         chart2Title = view.findViewById(R.id.chart_2_title);
         spinner = view.findViewById(R.id.one_room_stats_charts_spinner);
@@ -131,9 +139,13 @@ public class OneRoomStatsFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                // :(
             }
         });
+        progressBar1 = view.findViewById(R.id.progressBar_stats_1);
+        progressBar1.setVisibility(View.VISIBLE);
+        progressBar2 = view.findViewById(R.id.progressBar_stats_2);
+        progressBar2.setVisibility(View.VISIBLE);
 
         return view;
     }
@@ -147,8 +159,8 @@ public class OneRoomStatsFragment extends Fragment {
 //        loadToChart(chart1, tempDay, "Temperatura");
 //        loadToChart(chart2, tempMonth, "Temperatura");
 
-        resetChartData(chart1);
-        resetChartData(chart2);
+        resetChartData(chart1, progressBar1);
+        resetChartData(chart2, progressBar2);
 
 
         chart1Title.setText("Temperatura 24 h");
@@ -160,6 +172,8 @@ public class OneRoomStatsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(tempHistoryDay -> {
                     loadToChart(chart1, tempHistoryDay.getTemperatureHistory(), "Temperatura");
+                    chart1.setVisibility(View.VISIBLE);
+                    progressBar1.setVisibility(View.GONE);
                 })
                 .concatWith(tempHistoryObservableMonth
                         .timeout(10, TimeUnit.SECONDS)
@@ -167,6 +181,8 @@ public class OneRoomStatsFragment extends Fragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(tempHistoryMonth -> {
                             loadToChart(chart2, tempHistoryMonth.getTemperatureHistory(), "Temperatura");
+                            chart2.setVisibility(View.VISIBLE);
+                            progressBar2.setVisibility(View.GONE);
                         })
                 )
                 .observeOn(AndroidSchedulers.mainThread())
@@ -180,8 +196,8 @@ public class OneRoomStatsFragment extends Fragment {
         Observable<Power> powerHistoryObservableMonth = apiService.getPowerHistoryForRoom(roomId, 10);
         Observable<Power> powerHistoryObservableDay = apiService.getPowerHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
 
-        resetChartData(chart1);
-        resetChartData(chart2);
+        resetChartData(chart1, progressBar1);
+        resetChartData(chart2, progressBar2);
 
         chart1Title.setText("Światło 24 h");
         chart2Title.setText("Światło 7 dni");
@@ -192,6 +208,8 @@ public class OneRoomStatsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(tempHistoryDay -> {
                     loadToChart(chart1, tempHistoryDay.getLightPowerHistory(), "Światło");
+                    chart1.setVisibility(View.VISIBLE);
+                    progressBar1.setVisibility(View.GONE);
                 })
                 .concatWith(powerHistoryObservableMonth
                         .timeout(10, TimeUnit.SECONDS)
@@ -199,6 +217,8 @@ public class OneRoomStatsFragment extends Fragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(tempHistoryMonth -> {
                             loadToChart(chart2, tempHistoryMonth.getLightPowerHistory(), "Światło");
+                            chart2.setVisibility(View.VISIBLE);
+                            progressBar2.setVisibility(View.GONE);
                         })
                 )
                 .observeOn(AndroidSchedulers.mainThread())
@@ -212,8 +232,8 @@ public class OneRoomStatsFragment extends Fragment {
         Observable<Power> powerHistoryObservableMonth = apiService.getPowerHistoryForRoom(roomId, 10);
         Observable<Power> powerHistoryObservableDay = apiService.getPowerHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
 
-        resetChartData(chart1);
-        resetChartData(chart2);
+        resetChartData(chart1, progressBar1);
+        resetChartData(chart2, progressBar2);
 
         chart1Title.setText("Energia 24 h");
         chart2Title.setText("Energia 7 dni");
@@ -224,6 +244,8 @@ public class OneRoomStatsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(tempHistoryDay -> {
                     loadToChart(chart1, tempHistoryDay.getClimatPowerHistory(), "Energia");
+                    chart1.setVisibility(View.VISIBLE);
+                    progressBar1.setVisibility(View.GONE);
                 })
                 .concatWith(powerHistoryObservableMonth
                         .timeout(10, TimeUnit.SECONDS)
@@ -231,6 +253,8 @@ public class OneRoomStatsFragment extends Fragment {
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(tempHistoryMonth -> {
                             loadToChart(chart2, tempHistoryMonth.getClimatPowerHistory(), "Energia");
+                            chart2.setVisibility(View.VISIBLE);
+                            progressBar2.setVisibility(View.GONE);
                         })
                 )
                 .observeOn(AndroidSchedulers.mainThread())
@@ -240,9 +264,14 @@ public class OneRoomStatsFragment extends Fragment {
                 .subscribe();
     }
 
-    private static void resetChartData(LineChart lineChart) {
+    private static void resetChartData(LineChart lineChart, @Nullable ProgressBar progressBar) {
         lineChart.setData(null);
         lineChart.invalidate();
+
+        lineChart.setVisibility(View.INVISIBLE);
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
     }
 
     private static void loadToChart(LineChart lineChart, List<Double> values, String dataLabel) {
