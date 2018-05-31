@@ -16,10 +16,10 @@ public class Power {
     private Integer roomId;
     @SerializedName("lightPowerHistory")
     @Expose
-    private List<Integer> lightPowerHistory = null;
+    private List<Double> lightPowerHistory = null;
     @SerializedName("climatPowerHistory")
     @Expose
-    private List<Integer> climatPowerHistory = null;
+    private List<Double> climatPowerHistory = null;
 
     public Integer getRoomId() {
         return roomId;
@@ -29,19 +29,19 @@ public class Power {
         this.roomId = roomId;
     }
 
-    public List<Integer> getLightPowerHistory() {
+    public List<Double> getLightPowerHistory() {
         return lightPowerHistory;
     }
 
-    public void setLightPowerHistory(List<Integer> lightPowerHistory) {
+    public void setLightPowerHistory(List<Double> lightPowerHistory) {
         this.lightPowerHistory = lightPowerHistory;
     }
 
-    public List<Integer> getClimatPowerHistory() {
+    public List<Double> getClimatPowerHistory() {
         return climatPowerHistory;
     }
 
-    public void setClimatPowerHistory(List<Integer> climatPowerHistory) {
+    public void setClimatPowerHistory(List<Double> climatPowerHistory) {
         this.climatPowerHistory = climatPowerHistory;
     }
 

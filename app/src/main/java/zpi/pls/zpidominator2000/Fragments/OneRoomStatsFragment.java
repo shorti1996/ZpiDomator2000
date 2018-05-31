@@ -26,6 +26,7 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.Model.Power;
 import zpi.pls.zpidominator2000.Model.TempHistory;
 import zpi.pls.zpidominator2000.R;
 import zpi.pls.zpidominator2000.Utils;
@@ -134,44 +135,6 @@ public class OneRoomStatsFragment extends Fragment {
             }
         });
 
-//        tempHistoryObservableDay
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.io())
-//                .doOnNext(tempHistory -> loadToChart(chart1, tempHistory.getTemperatureHistory()))
-//                .subscribe();
-
-
-//        tempHistoryObservableDay
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.io())
-//                .onErrorResumeNext(x -> {
-//                    Log.d("AA", "Couldn't load temp history");
-//                    Utils.showToast(getContext(), "Couldn't load temp history");
-//                })
-//                .doOnNext((TempHistory tempHistory) -> {
-//                    List<Entry> entries = new ArrayList<>();
-//                    List<Integer> temperatureHistory = tempHistory.getTemperatureHistory();
-//                    if (temperatureHistory != null && !temperatureHistory.isEmpty()) {
-//                        for (int i = 0; i < temperatureHistory.size(); i++) {
-//                            Integer historyEntry = (temperatureHistory.get(i)).intValue();
-//                            Log.d("AA", "" + historyEntry);
-//                            entries.add(new Entry(i, historyEntry));
-//                        }
-//                        LineDataSet lineDataSet = new LineDataSet(entries, "Temperatura");
-//                        LineData lineData = new LineData(lineDataSet);
-//                        chart1.setData(lineData);
-//                        chart1.invalidate();
-//                    }
-//                })
-//                .observeOn(Schedulers.io())
-//                .flatMap(tempHistory -> tempHistoryObservableMonth)
-//                .doOnNext(tempHistory -> {
-//                    Log.d("AAAAAAAAAAAAA", "aaa");
-//                    for (Integer d: tempHistory.getTemperatureHistory()) {
-//                        Log.d("AA", "" + d);
-//                    }
-//                })
-//                .subscribe();
         return view;
     }
 
@@ -214,31 +177,67 @@ public class OneRoomStatsFragment extends Fragment {
     }
 
     private void loadLight() {
-        List<Double> lightDay = Sine.generate(100, 1f);
-        List<Double> lightMonth = Sine.generate(300, 1f);
+        Observable<Power> powerHistoryObservableMonth = apiService.getPowerHistoryForRoom(roomId, 10);
+        Observable<Power> powerHistoryObservableDay = apiService.getPowerHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
 
         resetChartData(chart1);
         resetChartData(chart2);
-
-        loadToChart(chart1, lightDay, "Światło");
-        loadToChart(chart2, lightMonth, "Światło");
 
         chart1Title.setText("Światło 24 h");
         chart2Title.setText("Światło 7 dni");
+
+        powerHistoryObservableDay
+                .timeout(10, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(tempHistoryDay -> {
+                    loadToChart(chart1, tempHistoryDay.getLightPowerHistory(), "Światło");
+                })
+                .concatWith(powerHistoryObservableMonth
+                        .timeout(10, TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(tempHistoryMonth -> {
+                            loadToChart(chart2, tempHistoryMonth.getLightPowerHistory(), "Światło");
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> {
+                    Utils.showToast(getContext(), "BAD");
+                })
+                .subscribe();
     }
 
     private void loadPower() {
-        List<Double> powerDay = Sine.generate(100, 1f);
-        List<Double> powerMonth = Sine.generate(300, 1f);
+        Observable<Power> powerHistoryObservableMonth = apiService.getPowerHistoryForRoom(roomId, 10);
+        Observable<Power> powerHistoryObservableDay = apiService.getPowerHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
 
         resetChartData(chart1);
         resetChartData(chart2);
 
-        loadToChart(chart1, powerDay, "Energia");
-        loadToChart(chart2, powerMonth, "Energia");
-
         chart1Title.setText("Energia 24 h");
         chart2Title.setText("Energia 7 dni");
+
+        powerHistoryObservableDay
+                .timeout(10, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(tempHistoryDay -> {
+                    loadToChart(chart1, tempHistoryDay.getClimatPowerHistory(), "Energia");
+                })
+                .concatWith(powerHistoryObservableMonth
+                        .timeout(10, TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(tempHistoryMonth -> {
+                            loadToChart(chart2, tempHistoryMonth.getClimatPowerHistory(), "Energia");
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> {
+                    Utils.showToast(getContext(), "BAD");
+                })
+                .subscribe();
     }
 
     private static void resetChartData(LineChart lineChart) {
@@ -299,7 +298,11 @@ public class OneRoomStatsFragment extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
+    /**
+     * It's for debug
+     */
     static class Sine {
+
         public static List<Double> generate(int count, float step) {
             List<Double> sinVals = new LinkedList<>();
             float curr = 0f;
