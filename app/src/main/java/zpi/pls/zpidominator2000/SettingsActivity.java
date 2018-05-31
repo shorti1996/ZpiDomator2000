@@ -1,6 +1,7 @@
 package zpi.pls.zpidominator2000;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,14 @@ public class SettingsActivity extends AppCompatActivity {
                     editor.putString(getString(R.string.setting_api_address_key), newAddress);
                     editor.apply();
                     ZpiApiRetrofitClient.changeApiServer(newAddress);
+                    Intent i = getBaseContext().getPackageManager()
+                            .getLaunchIntentForPackage(getBaseContext().getPackageName());
+                    if (i != null) {
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(i);
+                    } else {
+                        Utils.showToast(this, "Couldn't update the address");
+                    }
                 });
     }
 

@@ -68,6 +68,7 @@ public class OneRoomSettingsFragment extends Fragment {
     private double newTemp = 0;
     private AtomicInteger lightsToUpdateCount = new AtomicInteger(0);
     private AtomicBoolean shouldUpdateTemp = new AtomicBoolean(true);
+    private AtomicBoolean shouldUpdateLights = new AtomicBoolean(true);
     private PublishSubject<Integer> clicksUpSubject = PublishSubject.create();
     private PublishSubject<Integer> clicksDownSubject = PublishSubject.create();
 
@@ -156,7 +157,7 @@ public class OneRoomSettingsFragment extends Fragment {
         ping = Observable.interval(0L, UPDATE_PING_INTERVAL, TimeUnit.SECONDS, Schedulers.io());
         pingSubscription = ping.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(tick -> updateSettings());
+                .subscribe(tick -> downsyncSettings());
 
         return view;
     }
@@ -170,7 +171,7 @@ public class OneRoomSettingsFragment extends Fragment {
         setTempInRoomObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> {
+                .onErrorResumeNext(x -> {
                     shouldUpdateTemp.set(true);
                     showToast(getContext(), "Couldn't set temperature");
                 })
@@ -191,27 +192,28 @@ public class OneRoomSettingsFragment extends Fragment {
         pingSubscription.dispose();
     }
 
-    private void updateSettings() {
-        updateTemperatures();
-        updateLights();
+    private void downsyncSettings() {
+        downsyncTemperatures();
+        downsyncLights();
     }
 
-    private void updateTemperatures() {
+    private void downsyncTemperatures() {
         if (!shouldUpdateTemp.get()) {
+            showToast(getContext(), "Not updating temperature, pending changes");
             return;
         }
         Observable<RoomTemp> roomTempObservable = apiService.getTempInRoom(roomId);
         roomTempObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> showToast(getContext(), "Couldn't get temperature"))
+                .onErrorResumeNext(x -> {showToast(getContext(), "Couldn't get temperature");})
                 .subscribe(x -> {
                     setCurrTemp(x.getTemperature().intValue());
                     setNewTemp(x.getSetTemperature());
                 });
     }
 
-    private void updateLights() {
+    private void downsyncLights() {
         if (lightsToUpdateCount.get() > 0) {
             showToast(getContext(), "Not updating lights, pending changes");
             return;
@@ -220,28 +222,34 @@ public class OneRoomSettingsFragment extends Fragment {
         roomLightObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> showToast(getContext(), "Couldn't get lights"))
+                .onErrorResumeNext(x -> {showToast(getContext(), "Couldn't get lights");})
                 .subscribe(x -> {
                     for (Lights.Light light : x.getLights()) {
-                        Log.d(TAG, light.getName());
+                        Log.d(TAG, light.getName() + ", " + light.getState());
                     }
                     if (lightsAdapter == null) {
-                        lightsAdapter = new OneRoomLightsAdapter(x, this::scheduleUpdateLight);
+                        lightsAdapter = new OneRoomLightsAdapter(x, this::scheduleUpsyncLight);
                         lightsRv.setAdapter(lightsAdapter);
                     }
                     lightsAdapter.swapValues(x);
                 });
     }
 
-    private void scheduleUpdateLight(Lights.Light light, boolean enabled) {
+    private void scheduleUpsyncLight(Lights.Light light, boolean enabled) {
+        lightsToUpdateCount.incrementAndGet();
+        Log.d("Lights", "Light " + light.getId() + " update scheduled, to sync: " + lightsToUpdateCount.get());
         Observable<Response<Void>> setLightObservable = apiService.setLightInRoom(roomId, light.getId(), enabled);
         setLightObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(throwable -> showToast(getContext(), String.format("Can't set light: %s", throwable.getMessage())))
+                .onErrorResumeNext(throwable -> {
+                    showToast(getContext(), String.format("Can't set light: %s", ""));
+                    lightsToUpdateCount.decrementAndGet();
+                })
                 .subscribe(x -> {
-//                    showToast(getContext(), "Light updated");
-                    lightsToUpdateCount.getAndDecrement();
+                    showToast(getContext(), "Light updated");
+                    lightsToUpdateCount.decrementAndGet();
+                    Log.d("Lights", "Light updated, left to set: " + lightsToUpdateCount.get());
                 });
     }
 

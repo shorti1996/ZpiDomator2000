@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -19,6 +18,7 @@ import zpi.pls.zpidominator2000.Adapters.MyRoomItemRecyclerViewAdapter;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.Model.Rooms;
 import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.Utils;
 
 /**
  * A fragment representing a list of Items.
@@ -78,16 +78,14 @@ public class RoomsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-//            recyclerView.setAdapter(new MyRoomItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
             Observable<Rooms> roomsObservable = apiService.listRooms();
             roomsObservable
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
-                    .doOnError(x -> {
-                        Log.d("AA", x.getMessage());
-                        Toast.makeText(getContext(), "Couldn't load rooms", Toast.LENGTH_SHORT).show();
+                    .onErrorResumeNext(x -> {
+                        Log.d("AA", "no rooms fml");
+                        Utils.showToast(getContext(), "Couldn't load rooms");
                     })
-                    .onErrorReturnItem(new Rooms())
                     .subscribe((Rooms rooms) -> {
                         for (Rooms.Room r : rooms.getRooms()) {
                             Log.d("AA", r.getName());

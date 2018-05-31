@@ -95,14 +95,11 @@ public class OneRoomStatsFragment extends Fragment {
         tempHistoryObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(
-                        x -> {
-                            Log.d("AA", x.getMessage());
-                            Toast.makeText(getContext(), "Couldn't load temp history", Toast.LENGTH_SHORT).show();
-                        })
-
-
-                .onErrorReturnItem(new TempHistory())
+                .doOnError(x -> {
+                    Log.d("AA", x.getMessage());
+                    Toast.makeText(getContext(), "Couldn't load temp history", Toast.LENGTH_SHORT).show();
+                })
+                .onErrorResumeNext(throwable -> {})
                 .subscribe((TempHistory tempHistory) -> {
                     List<Entry> entries = new ArrayList<>();
                     List<Double> temperatureHistory = tempHistory.getTemperatureHistory();
