@@ -23,6 +23,6 @@ Aliquam vel eros tellus. Aenean ultricies fringilla risus ac consequat. Donec ma
     <string name="one_room_curr_temp">Obecnie %1$s&#8451;</string>
     <string name="one_room_set_temp">%1$s&#8451;</string>
     <string name="setting_api_address_key">APIADDR</string>
-    <string name="setting_api_address_default">192.168.40.66</string>
+    <string name="setting_api_address_default">212.237.52.192</string>
     <string name="shared_prefs_name">sharedprefs</string>
 </resources>

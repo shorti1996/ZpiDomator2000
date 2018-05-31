@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ZpiDomator2000.iml" filepath="$PROJECT_DIR$/ZpiDomator2000.iml" />
+      <module fileurl="file://C:\Users\aleksandra.koziel\Desktop\ZpiDomator2000-ola_update\ZpiDomator2000.iml" filepath="C:\Users\aleksandra.koziel\Desktop\ZpiDomator2000-ola_update\ZpiDomator2000.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ZpiDomator2000-ola_update.iml" filepath="$PROJECT_DIR$/ZpiDomator2000-ola_update.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

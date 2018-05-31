@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,7 @@ public class OneRoomStatsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private final int N_LAST_TEMP_ENTRIES_DEFAULT = 100;
+    private final int N_LAST_TEMP_ENTRIES_DEFAULT = 300;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -94,20 +95,30 @@ public class OneRoomStatsFragment extends Fragment {
         tempHistoryObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> Toast.makeText(getContext(), "Couldn't load temp history", Toast.LENGTH_SHORT).show())
+                .doOnError(
+                        x -> {
+                            Log.d("AA", x.getMessage());
+                            Toast.makeText(getContext(), "Couldn't load temp history", Toast.LENGTH_SHORT).show();
+                        })
+
+
                 .onErrorReturnItem(new TempHistory())
                 .subscribe((TempHistory tempHistory) -> {
                     List<Entry> entries = new ArrayList<>();
-                    List<Integer> temperatureHistory = tempHistory.getTemperatureHistory();
-                    for (int i = 0; i < temperatureHistory.size(); i++) {
-                        Integer historyEntry = temperatureHistory.get(i);
-//                        Log.d("AA", "" + historyEntry);
-                        entries.add(new Entry(i, historyEntry));
+                    List<Double> temperatureHistory = tempHistory.getTemperatureHistory();
+                    if (temperatureHistory != null && !temperatureHistory.isEmpty()) {
+                        for (int i = 0; i < temperatureHistory.size(); i++) {
+                            Integer historyEntry = (temperatureHistory.get(i)).intValue();
+                            Log.d("AA", "" + historyEntry);
+                            entries.add(new Entry(i, historyEntry));
+                        }
+                        LineDataSet lineDataSet = new LineDataSet(entries, "Temperatura");
+                        LineData lineData = new LineData(lineDataSet);
+                        tempLineChart.setData(lineData);
+                        tempLineChart.invalidate();
+                    } else {
+                        Log.d("AA", "empty history :(");
                     }
-                    LineDataSet lineDataSet = new LineDataSet(entries, "Temperatura");
-                    LineData lineData = new LineData(lineDataSet);
-                    tempLineChart.setData(lineData);
-                    tempLineChart.invalidate();
                 });
         return view;
     }

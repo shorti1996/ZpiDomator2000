@@ -16,7 +16,7 @@ public class TempHistory {
     private Integer roomId;
     @SerializedName("temperatureHistory")
     @Expose
-    private List<Integer> temperatureHistory = null;
+    private List<Double> temperatureHistory = null;
 
     public Integer getRoomId() {
         return roomId;
@@ -26,11 +26,11 @@ public class TempHistory {
         this.roomId = roomId;
     }
 
-    public List<Integer> getTemperatureHistory() {
+    public List<Double> getTemperatureHistory() {
         return temperatureHistory;
     }
 
-    public void setTemperatureHistory(List<Integer> temperatureHistory) {
+    public void setTemperatureHistory(List<Double> temperatureHistory) {
         this.temperatureHistory = temperatureHistory;
     }
 
