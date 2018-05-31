@@ -2,6 +2,7 @@ package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.constraint.Group;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
@@ -61,6 +63,9 @@ public class OneRoomSettingsFragment extends Fragment {
     public OneRoomLightsAdapter lightsAdapter;
     public ImageButton tempUp;
     public ImageButton tempDown;
+    private Group tempGroup;
+    private ProgressBar tempProgressBar;
+    private ProgressBar lightsProgressBar;
 
     private ZpiApiService apiService;
     private int roomId;
@@ -71,6 +76,8 @@ public class OneRoomSettingsFragment extends Fragment {
     private AtomicBoolean shouldUpdateLights = new AtomicBoolean(true);
     private PublishSubject<Integer> clicksUpSubject = PublishSubject.create();
     private PublishSubject<Integer> clicksDownSubject = PublishSubject.create();
+    private boolean isAfterInitialTempDownsync;
+    private boolean isAfterInitialLightsDownsync;
 
     public OneRoomSettingsFragment() {
         // Required empty public constructor
@@ -132,6 +139,10 @@ public class OneRoomSettingsFragment extends Fragment {
         lightsRv.setLayoutManager(new LinearLayoutManager(getContext()));
         tempDown = view.findViewById(R.id.one_room_temp_down);
         tempUp = view.findViewById(R.id.one_room_temp_up);
+        tempGroup = view.findViewById(R.id.group_temp_settings_card);
+        tempProgressBar = view.findViewById(R.id.progressBar_temp_setting_card);
+        lightsProgressBar = view.findViewById(R.id.progressBar_light_settings_card);
+
         RxView.clicks(tempDown).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> {
 //            showToast(getContext(), "DONW");
@@ -158,6 +169,10 @@ public class OneRoomSettingsFragment extends Fragment {
         pingSubscription = ping.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(tick -> downsyncSettings());
+
+        tempGroup.setVisibility(View.INVISIBLE);
+        tempProgressBar.setVisibility(View.VISIBLE);
+        lightsProgressBar.setVisibility(View.VISIBLE);
 
         return view;
     }
@@ -210,6 +225,11 @@ public class OneRoomSettingsFragment extends Fragment {
                 .subscribe(x -> {
                     setCurrTemp(x.getTemperature().intValue());
                     setNewTemp(x.getSetTemperature());
+                    if (!isAfterInitialTempDownsync) {
+                        tempGroup.setVisibility(View.VISIBLE);
+                        tempProgressBar.setVisibility(View.GONE);
+                        isAfterInitialTempDownsync = true;
+                    }
                 });
     }
 
@@ -230,6 +250,10 @@ public class OneRoomSettingsFragment extends Fragment {
                     if (lightsAdapter == null) {
                         lightsAdapter = new OneRoomLightsAdapter(x, this::scheduleUpsyncLight);
                         lightsRv.setAdapter(lightsAdapter);
+                        if (!isAfterInitialLightsDownsync) {
+                            lightsProgressBar.setVisibility(View.GONE);
+                            isAfterInitialLightsDownsync = true;
+                        }
                     }
                     lightsAdapter.swapValues(x);
                 });
