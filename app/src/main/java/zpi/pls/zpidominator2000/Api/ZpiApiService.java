@@ -7,6 +7,7 @@ import retrofit2.http.GET;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import zpi.pls.zpidominator2000.Model.HouseTemp;
 import zpi.pls.zpidominator2000.Model.Lights;
 import zpi.pls.zpidominator2000.Model.Power;
 import zpi.pls.zpidominator2000.Model.RoomTemp;
@@ -21,6 +22,9 @@ public interface ZpiApiService {
 
     @GET("room")
     Observable<Rooms> listRooms();
+
+    @GET("temp")
+    Observable<HouseTemp> getHouseTemp();
 
     @GET("temp/{id}")
     Observable<RoomTemp> getTempInRoom(@Path("id") int id);

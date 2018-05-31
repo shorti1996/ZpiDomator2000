@@ -1,5 +1,6 @@
 package zpi.pls.zpidominator2000.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,9 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.R;
 import zpi.pls.zpidominator2000.Utils;
 
@@ -45,6 +51,13 @@ public class HomePlanFragment extends Fragment {
     boolean isOnZeroFloor = true;
 
     private OnFragmentInteractionListener mListener;
+    private CardView floorInfoCard;
+    private CardView roomInfoCard;
+    private ZpiApiService apiService;
+    private TextView floorTemp;
+    private TextView outsideTemp;
+    private TextView roomTemp;
+    private TextView roomSetTemp;
 
     public HomePlanFragment() {
         // Required empty public constructor
@@ -59,12 +72,13 @@ public class HomePlanFragment extends Fragment {
      * @return A new instance of fragment HomePlanFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomePlanFragment newInstance(String param1, String param2) {
+    public static HomePlanFragment newInstance(String param1, String param2, ZpiApiService zpiApiService) {
         HomePlanFragment fragment = new HomePlanFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
+        fragment.apiService = zpiApiService;
         return fragment;
     }
 
@@ -94,7 +108,36 @@ public class HomePlanFragment extends Fragment {
 /*        homePlanIv.setOnClickListener(view1 -> {
             swapFloor();
         });*/
+        floorInfoCard = view.findViewById(R.id.cardViewFloorInfo);
+        roomInfoCard = view.findViewById(R.id.cardViewRoomInfo);
+        floorTemp = view.findViewById(R.id.floor_info_floor_temp);
+        outsideTemp = view.findViewById(R.id.floor_info_outside_temp_val);
+        roomTemp = view.findViewById(R.id.floor_info_room_temp);
+        roomSetTemp = view.findViewById(R.id.floor_info_room_settemp);
+
         loadFloor(isOnZeroFloor);
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void showFloorInfoCard() {
+        floorInfoCard.setVisibility(View.VISIBLE);
+        roomInfoCard.setVisibility(View.INVISIBLE);
+
+        apiService.getHouseTemp()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .onErrorResumeNext(throwable -> {Utils.showToast(getContext(), "Couldn't update house temp");})
+                .doOnNext(houseTemp -> {
+                    Log.d("ASAA", "" + houseTemp.getHouseTemperature());
+                    floorTemp.setText(String.format("%.1f °C", houseTemp.getHouseTemperature()));
+                }).subscribe();
+    }
+
+    private void showRoomInfoCard(int roomId) {
+        floorInfoCard.setVisibility(View.INVISIBLE);
+        roomInfoCard.setVisibility(View.VISIBLE);
+
+        apiService.getTempInRoom(roomId);
 
     }
 
@@ -104,6 +147,8 @@ public class HomePlanFragment extends Fragment {
     }
 
     private void loadFloor(boolean isOnGroundFloor) {
+        showFloorInfoCard();
+
         View view = getView();
         if (view != null) {
             ViewGroup floor_content = view.findViewById(R.id.include_floor);
@@ -118,6 +163,7 @@ public class HomePlanFragment extends Fragment {
 
                 view.findViewById(R.id.button_parter1_1).setOnClickListener(v -> {
                     Utils.showToast(getContext(), "1");
+                    showRoomInfoCard(0);
                 });
                 view.findViewById(R.id.button_parter1_2).setOnClickListener(v -> {
                     Utils.showToast(getContext(), "1");
