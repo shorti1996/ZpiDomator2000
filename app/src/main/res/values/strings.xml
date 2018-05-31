@@ -26,9 +26,12 @@ Aliquam vel eros tellus. Aenean ultricies fringilla risus ac consequat. Donec ma
     <string name="setting_api_address_default">212.237.52.192</string>
     <string name="shared_prefs_name">sharedprefs</string>
 
+    <string name="stats_spinner_temp">Temperature</string>
+    <string name="stats_spinner_lights">Lights</string>
+    <string name="stats_spinner_power">Power</string>
     <string-array name="stats_spinner_array">
-        <item>Temperature</item>
-        <item>Lights</item>
-        <item>Power</item>
+        <item>@string/stats_spinner_temp</item>
+        <item>@string/stats_spinner_lights</item>
+        <item>@string/stats_spinner_power</item>
     </string-array>
 </resources>

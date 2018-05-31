@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -58,6 +60,8 @@ public class OneRoomStatsFragment extends Fragment {
     private TextView chart1Title;
     private TextView chart2Title;
     private Spinner spinner;
+    private ArrayAdapter<String> spinnerAdapter;
+    private String[] spinnerItems;
 
     public OneRoomStatsFragment() {
         // Required empty public constructor
@@ -102,15 +106,29 @@ public class OneRoomStatsFragment extends Fragment {
         chart1Title = view.findViewById(R.id.chart_1_title);
         chart2Title = view.findViewById(R.id.chart_2_title);
         spinner = view.findViewById(R.id.one_room_stats_charts_spinner);
+        spinnerItems = getResources().getStringArray(R.array.stats_spinner_array);
+        spinnerAdapter = new ArrayAdapter<>(this.getContext(),
+                R.layout.support_simple_spinner_dropdown_item,
+                spinnerItems);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String spinnerItem = spinnerItems[position];
+                if (spinnerItem.equals(getString(R.string.stats_spinner_temp))) {
+                    loadTemp();
+                } else if (spinnerItem.equals(getString(R.string.stats_spinner_lights))) {
+                    loadLight();
+                } else if (spinnerItem.equals(getString(R.string.stats_spinner_power))) {
+                    loadPower();
+                }
+            }
 
-        Observable<TempHistory> tempHistoryObservableMonth = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_MONTH);
-        Observable<TempHistory> tempHistoryObservableDay = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-        List<Double> tempDay = Sine.generate(100, 1f);
-        List<Double> tempMonth = Sine.generate(300, 1f);
-
-        loadToChart(chart1, tempDay, "Temperatura");
-        loadToChart(chart2, tempMonth, "Temperatura");
+            }
+        });
 
 //        tempHistoryObservableDay
 //                .observeOn(AndroidSchedulers.mainThread())
@@ -151,6 +169,56 @@ public class OneRoomStatsFragment extends Fragment {
 //                })
 //                .subscribe();
         return view;
+    }
+
+    private void loadTemp() {
+        Observable<TempHistory> tempHistoryObservableMonth = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_MONTH);
+        Observable<TempHistory> tempHistoryObservableDay = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
+
+        List<Double> tempDay = Sine.generate(100, 1f);
+        List<Double> tempMonth = Sine.generate(300, 1f);
+
+        resetChartData(chart1);
+        resetChartData(chart2);
+
+        loadToChart(chart1, tempDay, "Temperatura");
+        loadToChart(chart2, tempMonth, "Temperatura");
+
+        chart1Title.setText("Temperatura 24 h");
+        chart2Title.setText("Temperatura 7 dni");
+    }
+
+    private void loadLight() {
+        List<Double> lightDay = Sine.generate(100, 1f);
+        List<Double> lightMonth = Sine.generate(300, 1f);
+
+        resetChartData(chart1);
+        resetChartData(chart2);
+
+        loadToChart(chart1, lightDay, "Światło");
+        loadToChart(chart2, lightMonth, "Światło");
+
+        chart1Title.setText("Światło 24 h");
+        chart2Title.setText("Światło 7 dni");
+    }
+
+    private void loadPower() {
+        List<Double> powerDay = Sine.generate(100, 1f);
+        List<Double> powerMonth = Sine.generate(300, 1f);
+
+        resetChartData(chart1);
+        resetChartData(chart2);
+
+        loadToChart(chart1, powerDay, "Energia");
+        loadToChart(chart2, powerMonth, "Energia");
+
+        chart1Title.setText("Energia 24 h");
+        chart2Title.setText("Energia 7 dni");
+    }
+
+    private static void resetChartData(LineChart lineChart) {
+        lineChart.setData(null);
+        lineChart.invalidate();
     }
 
     private static void loadToChart(LineChart lineChart, List<Double> values, String dataLabel) {
