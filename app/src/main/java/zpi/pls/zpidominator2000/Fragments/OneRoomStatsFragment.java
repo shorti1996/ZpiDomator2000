@@ -4,11 +4,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -16,11 +16,10 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
 import zpi.pls.zpidominator2000.Model.TempHistory;
 import zpi.pls.zpidominator2000.R;
@@ -39,7 +38,13 @@ public class OneRoomStatsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private final int N_LAST_TEMP_ENTRIES_DEFAULT = 300;
+    private final int N_LAST_TEMP_ENTRIES_DAY = 30;
+    private final int N_LAST_TEMP_ENTRIES_MONTH = 300;
+    private final int N_LAST_POW_ENTRIES_DAY = 30;
+    private final int N_LAST_POW_ENTRIES_MONTH = 300;
+    private final int N_LAST_LIGHT_ENTRIES_DAY = 30;
+    private final int N_LAST_LIGHT_ENTRIES_MONTH = 300;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -48,7 +53,11 @@ public class OneRoomStatsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private ZpiApiService apiService;
     private int roomId;
-    public LineChart tempLineChart;
+    public LineChart chart1;
+    public LineChart chart2;
+    private TextView chart1Title;
+    private TextView chart2Title;
+    private Spinner spinner;
 
     public OneRoomStatsFragment() {
         // Required empty public constructor
@@ -88,36 +97,74 @@ public class OneRoomStatsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_one_room_stats, container, false);
-        tempLineChart = view.findViewById(R.id.one_room_stats_temp_line_chart);
+        chart1 = view.findViewById(R.id.one_room_stats_temp_day_line_chart);
+        chart2 = view.findViewById(R.id.one_room_stats_temp_month_line_chart);
+        chart1Title = view.findViewById(R.id.chart_1_title);
+        chart2Title = view.findViewById(R.id.chart_2_title);
+        spinner = view.findViewById(R.id.one_room_stats_charts_spinner);
 
-        Observable<TempHistory> tempHistoryObservable = apiService.getTempHistoryForRoom(roomId, N_LAST_TEMP_ENTRIES_DEFAULT);
+        Observable<TempHistory> tempHistoryObservableMonth = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_MONTH);
+        Observable<TempHistory> tempHistoryObservableDay = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
 
-        tempHistoryObservable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .doOnError(x -> {
-                    Log.d("AA", x.getMessage());
-                    Toast.makeText(getContext(), "Couldn't load temp history", Toast.LENGTH_SHORT).show();
-                })
-                .onErrorResumeNext(throwable -> {})
-                .subscribe((TempHistory tempHistory) -> {
-                    List<Entry> entries = new ArrayList<>();
-                    List<Double> temperatureHistory = tempHistory.getTemperatureHistory();
-                    if (temperatureHistory != null && !temperatureHistory.isEmpty()) {
-                        for (int i = 0; i < temperatureHistory.size(); i++) {
-                            Integer historyEntry = (temperatureHistory.get(i)).intValue();
-                            Log.d("AA", "" + historyEntry);
-                            entries.add(new Entry(i, historyEntry));
-                        }
-                        LineDataSet lineDataSet = new LineDataSet(entries, "Temperatura");
-                        LineData lineData = new LineData(lineDataSet);
-                        tempLineChart.setData(lineData);
-                        tempLineChart.invalidate();
-                    } else {
-                        Log.d("AA", "empty history :(");
-                    }
-                });
+        List<Double> tempDay = Sine.generate(100, 1f);
+        List<Double> tempMonth = Sine.generate(300, 1f);
+
+        loadToChart(chart1, tempDay, "Temperatura");
+        loadToChart(chart2, tempMonth, "Temperatura");
+
+//        tempHistoryObservableDay
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io())
+//                .doOnNext(tempHistory -> loadToChart(chart1, tempHistory.getTemperatureHistory()))
+//                .subscribe();
+
+
+//        tempHistoryObservableDay
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.io())
+//                .onErrorResumeNext(x -> {
+//                    Log.d("AA", "Couldn't load temp history");
+//                    Utils.showToast(getContext(), "Couldn't load temp history");
+//                })
+//                .doOnNext((TempHistory tempHistory) -> {
+//                    List<Entry> entries = new ArrayList<>();
+//                    List<Integer> temperatureHistory = tempHistory.getTemperatureHistory();
+//                    if (temperatureHistory != null && !temperatureHistory.isEmpty()) {
+//                        for (int i = 0; i < temperatureHistory.size(); i++) {
+//                            Integer historyEntry = (temperatureHistory.get(i)).intValue();
+//                            Log.d("AA", "" + historyEntry);
+//                            entries.add(new Entry(i, historyEntry));
+//                        }
+//                        LineDataSet lineDataSet = new LineDataSet(entries, "Temperatura");
+//                        LineData lineData = new LineData(lineDataSet);
+//                        chart1.setData(lineData);
+//                        chart1.invalidate();
+//                    }
+//                })
+//                .observeOn(Schedulers.io())
+//                .flatMap(tempHistory -> tempHistoryObservableMonth)
+//                .doOnNext(tempHistory -> {
+//                    Log.d("AAAAAAAAAAAAA", "aaa");
+//                    for (Integer d: tempHistory.getTemperatureHistory()) {
+//                        Log.d("AA", "" + d);
+//                    }
+//                })
+//                .subscribe();
         return view;
+    }
+
+    private static void loadToChart(LineChart lineChart, List<Double> values, String dataLabel) {
+        List<Entry> entries = new ArrayList<>();
+        if (values != null && !values.isEmpty()) {
+            for (int i = 0; i < values.size(); i++) {
+                Double historyEntry = values.get(i);
+                entries.add(new Entry(i, historyEntry.floatValue()));
+            }
+            LineDataSet lineDataSet = new LineDataSet(entries, dataLabel);
+            LineData lineData = new LineData(lineDataSet);
+            lineChart.setData(lineData);
+            lineChart.invalidate();
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -157,5 +204,18 @@ public class OneRoomStatsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    static class Sine {
+        public static List<Double> generate(int count, float step) {
+            List<Double> sinVals = new LinkedList<>();
+            float curr = 0f;
+            for (int i = 0; i < count; i++) {
+                double v = Math.sin(Math.toRadians(curr));
+                sinVals.add(v);
+                curr += step;
+            }
+            return sinVals;
+        }
     }
 }
