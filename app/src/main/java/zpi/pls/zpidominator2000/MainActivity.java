@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -42,6 +43,9 @@ public class MainActivity extends AppCompatActivity
         ZpiApiRetrofitClient.OnApiAddressChangedListener,
         HomePlanFragment.HomePlanFragmentInteractionListener {
 
+    public static final int API_LOGIN_REQUEST_CODE = 1000;
+    public static final int API_LOGIN_RESULT_CODE_OK = 1;
+
     @IntDef(HOME)
     @Retention(RetentionPolicy.SOURCE)
     public @interface MainActivityDrawerState {
@@ -69,8 +73,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent loginIntent = new Intent(this, LoginActivity.class);
-        startActivity(loginIntent);
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -103,12 +105,38 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         tabLayout = findViewById(R.id.tabs);
 
-//        initializeApiClientAndApp();
+//        initializeApiAndShowHome();
+        ApiParams apiParams = new ApiParams().getParams();
+        String username = apiParams.getUsername();
+        String password = apiParams.getPassword();
+        if (username != null && password != null) {
+            initializeApiAndShowHome();
+        } else {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivityForResult(loginIntent, API_LOGIN_REQUEST_CODE);
+        }
+//        retrofit = new ZpiApiRetrofitClient(apiAddress, username, password, this).getRetrofit();
+//        apiService = retrofit.create(ZpiApiService.class);
     }
 
-    private void initializeApiClientAndApp() {
-        String apiAddress = getApiAddress(this);
-        retrofit = new ZpiApiRetrofitClient(apiAddress, "User1", "UserPassword1", this).getRetrofit();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (API_LOGIN_REQUEST_CODE == requestCode) {
+            if (API_LOGIN_RESULT_CODE_OK == resultCode) {
+                initializeApiAndShowHome();
+            } else {
+                Utils.showToast(this, "Something went wrong with login");
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void initializeApiAndShowHome() {
+        ApiParams apiParams = new ApiParams().getParams();
+        String apiAddress = apiParams.getApiAddress();
+        String username = apiParams.getUsername();
+        String password = apiParams.getPassword();
+        retrofit = new ZpiApiRetrofitClient(apiAddress, username, password, this).getRetrofit();
         apiService = retrofit.create(ZpiApiService.class);
 
         getSupportFragmentManager().addOnBackStackChangedListener(this::updateNavDrawer);
@@ -314,5 +342,33 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSwapFloor() {
 
+    }
+
+    private class ApiParams {
+        private String apiAddress;
+        @Nullable private String username;
+        @Nullable private String password;
+
+        public String getApiAddress() {
+            return apiAddress;
+        }
+
+        @Nullable
+        public String getUsername() {
+            return username;
+        }
+
+        @Nullable
+        public String getPassword() {
+            return password;
+        }
+
+        public ApiParams getParams() {
+            apiAddress = getApiAddress();
+            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
+            username = sharedPref.getString(getString(R.string.saved_username_key), null);
+            password = sharedPref.getString(getString(R.string.saved_username_password), null);
+            return this;
+        }
     }
 }

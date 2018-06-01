@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -222,6 +224,37 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             loginFailed();
                         } else if (response.code() == 200 /*ok*/) {
                             // TODO save email and password
+                            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putString(getString(R.string.saved_username_key), email);
+
+//               __________________________
+//              /\                         \
+//             /  \            ____         \
+//            / \/ \          /\   \         \
+//            \ /\  \         \ \   \         \
+//             \  \  \     ____\_\   \______   \
+//              \   /\\   /\                \   \
+//               \ /\/ \  \ \_______    _____\   \
+//                \\/ / \  \/______/\   \____/    \
+//                 \ / /\\         \ \   \         \
+//                  \ /\/ \         \ \   \         \
+//                   \\/ / \         \ \   \         \
+//              Thou  \ /   \         \ \   \         \
+//                     \\  /\\         \ \   \         \
+//            shall save\ /\  \         \ \___\         \
+//                       \\    \         \/___/          \
+//              all your  \  \/ \                         \
+//                         \ /\  \_________________________\
+//             passwords to \  \ / ______________________  /
+//                           \  / ______________________  /
+//             shared prefs   \/_________________________/
+
+
+                            editor.putString(getString(R.string.saved_username_password), password); // I KNOW XDDD
+                            editor.commit();
+
+                            setResult(MainActivity.API_LOGIN_RESULT_CODE_OK);
                             finish();
                         } else {
                             showProgress(false);

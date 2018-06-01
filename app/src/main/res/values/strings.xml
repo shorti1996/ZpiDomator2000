@@ -48,4 +48,6 @@ Aliquam vel eros tellus. Aenean ultricies fringilla risus ac consequat. Donec ma
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="saved_username_key">username_key</string>
+    <string name="saved_username_password">key_password</string>
 </resources>
