@@ -21,6 +21,9 @@ import zpi.pls.zpidominator2000.Model.TempHistory;
 
 public interface ZpiApiService {
 
+    @GET("temp/outside")
+    Observable<Response<Void>> test();
+
     @GET("room")
     Observable<Rooms> listRooms();
 

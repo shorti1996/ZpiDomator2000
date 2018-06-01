@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent loginIntent = new Intent(this, LoginActivity.class);
+        startActivity(loginIntent);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -100,14 +103,23 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         tabLayout = findViewById(R.id.tabs);
 
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
-        String defaultValue = getResources().getString(R.string.setting_api_address_default);
-        String apiAddress = sharedPref.getString(getString(R.string.setting_api_address_key), defaultValue);
-        retrofit = new ZpiApiRetrofitClient(apiAddress, this).getRetrofit();
+//        initializeApiClientAndApp();
+    }
+
+    private void initializeApiClientAndApp() {
+        String apiAddress = getApiAddress(this);
+        retrofit = new ZpiApiRetrofitClient(apiAddress, "User1", "UserPassword1", this).getRetrofit();
         apiService = retrofit.create(ZpiApiService.class);
 
         getSupportFragmentManager().addOnBackStackChangedListener(this::updateNavDrawer);
         goToHomePlan();
+    }
+
+    @NonNull
+    public static String getApiAddress(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
+        String defaultValue = context.getResources().getString(R.string.setting_api_address_default);
+        return sharedPref.getString(context.getString(R.string.setting_api_address_key), defaultValue);
     }
 
     private void updateNavDrawer() {
