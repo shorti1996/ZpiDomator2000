@@ -4,15 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import zpi.pls.AppCompatActivityWithBackButton;
 import zpi.pls.zpidominator2000.Api.ZpiApiRetrofitClient;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivityWithBackButton {
 
     public EditText apiAddressVal;
     public Button apiAddressOk;
@@ -73,4 +73,5 @@ public class SettingsActivity extends AppCompatActivity {
         String apiAddress = sharedPref.getString(getString(R.string.setting_api_address_key), defaultValue);
         apiAddressVal.setText(apiAddress);
     }
+
 }
