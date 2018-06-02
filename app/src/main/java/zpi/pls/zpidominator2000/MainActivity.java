@@ -23,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity
 
     public static final int API_LOGIN_REQUEST_CODE = 1000;
     public static final int API_LOGIN_RESULT_CODE_OK = 1;
+    private String username;
 
     @IntDef(HOME)
     @Retention(RetentionPolicy.SOURCE)
@@ -135,12 +137,24 @@ public class MainActivity extends AppCompatActivity
     private void initializeApiAndShowHome() {
         ApiParams apiParams = new ApiParams().getParams();
         String apiAddress = apiParams.getApiAddress();
-        String username = apiParams.getUsername();
+        username = apiParams.getUsername();
         String password = apiParams.getPassword();
         retrofit = new ZpiApiRetrofitClient(apiAddress, username, password, this).getRetrofit();
         apiService = retrofit.create(ZpiApiService.class);
 
         getSupportFragmentManager().addOnBackStackChangedListener(this::updateNavDrawer);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        NavigationView drawerView = getDrawerView();
+        if (drawerView != null) {
+            TextView textInNavDrawer = drawerView.getHeaderView(0).findViewById(R.id.nav_drawer_header_text);
+            if (textInNavDrawer != null) {
+                textInNavDrawer.setText(username);
+            }
+        }
     }
 
     @Override

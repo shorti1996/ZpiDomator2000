@@ -169,7 +169,7 @@ public class HomePlanFragment extends Fragment {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .onErrorResumeNext(throwable -> {
-                        Utils.showToast(getContext(), "Couldn't update house temp");
+                        Utils.showToast(HomePlanFragment.this.getContext(), "Couldn't update house temp");
                     })
                     .onErrorReturn(throwable -> new HouseTemp())
                 .doOnError(throwable -> {})
