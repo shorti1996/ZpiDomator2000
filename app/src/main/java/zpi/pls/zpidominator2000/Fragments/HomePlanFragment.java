@@ -10,6 +10,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.Group;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,7 @@ import zpi.pls.zpidominator2000.Utils;
  * create an instance of this fragment.
  */
 public class HomePlanFragment extends Fragment {
+    private static final String LOG_TAG = HomePlanFragment.class.getSimpleName();
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -280,7 +282,13 @@ public class HomePlanFragment extends Fragment {
 
     private void goToRoom(int index) {
         if (roomList != null) {
-            showRoomInfoCard(roomList.get(index));
+            if (!roomList.isEmpty()) {
+                showRoomInfoCard(roomList.get(index));
+            } else  {
+                Log.w(LOG_TAG, "Can't go to room because rooms list downloaded from server is empty");
+            }
+        } else {
+            Log.w(LOG_TAG, "Can't go to room because there are no rooms downloaded from server");
         }
     }
 
