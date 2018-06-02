@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -223,12 +224,22 @@ public class OneRoomSettingsFragment extends Fragment {
                 .subscribeOn(Schedulers.io())
                 .onErrorResumeNext(x -> {showToast(getContext(), "Couldn't get temperature");})
                 .subscribe(x -> {
-                    setCurrTemp(x.getTemperature().intValue());
-                    setNewTemp(x.getSetTemperature());
-                    if (!isAfterInitialTempDownsync) {
-                        tempGroup.setVisibility(View.VISIBLE);
-                        tempProgressBar.setVisibility(View.GONE);
-                        isAfterInitialTempDownsync = true;
+                    if (x != null) {
+                        Double temperature = x.getTemperature();
+                        if (temperature != null) {
+                            setCurrTemp(temperature.intValue());
+                        }
+                        Double setTemperature = x.getSetTemperature();
+                        if (setTemperature != null) {
+                            setNewTemp(setTemperature);
+                        }
+                        if (!isAfterInitialTempDownsync) {
+                            if (setTemperature != null && temperature != null) {
+                                tempGroup.setVisibility(View.VISIBLE);
+                                tempProgressBar.setVisibility(View.GONE);
+                                isAfterInitialTempDownsync = true;
+                            }
+                        }
                     }
                 });
     }
@@ -245,18 +256,23 @@ public class OneRoomSettingsFragment extends Fragment {
                 .onErrorResumeNext(x -> {showToast(getContext(), "Couldn't get lights");})
                 .onErrorReturn(throwable -> new Lights())
                 .subscribe(x -> {
-                    for (Lights.Light light : x.getLights()) {
-                        Log.d(TAG, light.getName() + ", " + light.getState());
-                    }
-                    if (lightsAdapter == null) {
-                        lightsAdapter = new OneRoomLightsAdapter(x, this::scheduleUpsyncLight);
-                        lightsRv.setAdapter(lightsAdapter);
-                        if (!isAfterInitialLightsDownsync) {
-                            lightsProgressBar.setVisibility(View.GONE);
-                            isAfterInitialLightsDownsync = true;
+                    if (x != null) {
+                        List<Lights.Light> lights = x.getLights();
+                        if (lights != null) {
+                            for (Lights.Light light : lights) {
+                                Log.d(TAG, light.getName() + ", " + light.getState());
+                            }
+                            if (lightsAdapter == null) {
+                                lightsAdapter = new OneRoomLightsAdapter(x, this::scheduleUpsyncLight);
+                                lightsRv.setAdapter(lightsAdapter);
+                                if (!isAfterInitialLightsDownsync) {
+                                    lightsProgressBar.setVisibility(View.GONE);
+                                    isAfterInitialLightsDownsync = true;
+                                }
+                            }
+                            lightsAdapter.swapValues(x);
                         }
                     }
-                    lightsAdapter.swapValues(x);
                 });
     }
 
