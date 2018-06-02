@@ -2,6 +2,7 @@ package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +36,7 @@ public class RoomsFragment extends Fragment {
     private OnRoomSelectedListener mListener;
     private ZpiApiService apiService;
     private RecyclerView recyclerView;
+    private View progressBar;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -65,14 +67,15 @@ public class RoomsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_roomitem_list, container, false);
 
+        progressBar = view.findViewById(R.id.progressBar_rooms_list);
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView = view.findViewById(R.id.room_list);
         // Set the adapter
-        if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
@@ -85,14 +88,16 @@ public class RoomsFragment extends Fragment {
                     .onErrorResumeNext(x -> {
                         Log.d("AA", "no rooms fml");
                         Utils.showToast(getContext(), "Couldn't load rooms");
+                        progressBar.setVisibility(View.GONE);
                     })
+                    .onErrorReturn(throwable -> new Rooms())
                     .subscribe((Rooms rooms) -> {
+                        progressBar.setVisibility(View.GONE);
                         for (Rooms.Room r : rooms.getRooms()) {
                             Log.d("AA", r.getName());
                         }
                         recyclerView.setAdapter(new MyRoomItemRecyclerViewAdapter(rooms, mListener));
                     });
-        }
         return view;
     }
 

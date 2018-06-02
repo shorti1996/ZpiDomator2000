@@ -243,6 +243,7 @@ public class OneRoomSettingsFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .onErrorResumeNext(x -> {showToast(getContext(), "Couldn't get lights");})
+                .onErrorReturn(throwable -> new Lights())
                 .subscribe(x -> {
                     for (Lights.Light light : x.getLights()) {
                         Log.d(TAG, light.getName() + ", " + light.getState());
