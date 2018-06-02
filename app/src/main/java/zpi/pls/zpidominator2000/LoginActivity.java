@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -29,12 +30,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import zpi.pls.zpidominator2000.Api.ZpiApiRetrofitClient;
@@ -46,6 +50,14 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor>,ZpiApiRetrofitClient.OnApiAddressChangedListener {
+
+    @IntDef({BAD_PASS, OTHER})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface LoginFailReason {
+    }
+
+    public static final int BAD_PASS = 0;
+    public static final int OTHER = 1;
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -215,13 +227,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .doOnError(throwable -> {
-                        loginFailed();
+                        loginFailed(OTHER);
                         Utils.showToast(this, "Something went wrong");
                     })
                     .onErrorResumeNext(throwable -> {})
+                    .onErrorReturn(throwable -> Response.error(404, ResponseBody.create(null, "")))
                     .subscribe(response -> {
                         if (response.code() == 403 /*forbidden*/) {
-                            loginFailed();
+                            loginFailed(BAD_PASS);
                         } else if (response.code() == 200 /*ok*/) {
                             // TODO save email and password
                             SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
@@ -251,23 +264,26 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //             shared prefs   \/_________________________/
 
 
-                            editor.putString(getString(R.string.saved_username_password), password); // I KNOW XDDD
+                            editor.putString(getString(R.string.saved_password_key), password); // I KNOW XDDD
                             editor.commit();
 
                             setResult(MainActivity.API_LOGIN_RESULT_CODE_OK);
                             finish();
                         } else {
-                            showProgress(false);
+                            loginFailed(OTHER);
                             Utils.showToast(this, "Some error: HTTP " + response.code());
                         }
                     });
         }
     }
 
-    private void loginFailed() {
+    private void loginFailed(@LoginFailReason int reason) {
+        if (reason == BAD_PASS) {
+            mPasswordView.setError(getString(R.string.error_incorrect_password));
+            mPasswordView.requestFocus();
+        }
+        ZpiApiRetrofitClient.clear();
         showProgress(false);
-        mPasswordView.setError(getString(R.string.error_incorrect_password));
-        mPasswordView.requestFocus();
     }
 
     private boolean isEmailValid(String email) {

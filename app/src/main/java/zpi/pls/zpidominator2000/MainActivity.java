@@ -20,7 +20,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -121,11 +120,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (API_LOGIN_REQUEST_CODE == requestCode) {
-            if (API_LOGIN_RESULT_CODE_OK == resultCode) {
-                initializeApiAndShowHome();
-            } else {
-                Utils.showToast(this, "Something went wrong with login");
+        if(resultCode != RESULT_CANCELED) {
+            if (API_LOGIN_REQUEST_CODE == requestCode) {
+                if (API_LOGIN_RESULT_CODE_OK == resultCode) {
+                    initializeApiAndShowHome();
+                } else {
+                    Utils.showToast(this, "Something went wrong with login");
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -140,6 +141,11 @@ public class MainActivity extends AppCompatActivity
         apiService = retrofit.create(ZpiApiService.class);
 
         getSupportFragmentManager().addOnBackStackChangedListener(this::updateNavDrawer);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         goToHomePlan();
     }
 
@@ -154,7 +160,10 @@ public class MainActivity extends AppCompatActivity
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         int backStackEntryCount = fragmentManager.getBackStackEntryCount();
         if (backStackEntryCount == 0) {
-            getDrawerView().setCheckedItem(R.id.nav_home);
+            NavigationView drawerView = getDrawerView();
+            if (drawerView != null) {
+                drawerView.setCheckedItem(R.id.nav_home);
+            }
         }
 //        else {
 //            android.support.v4.app.FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(backStackEntryCount - 1);
@@ -200,8 +209,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void goToHomePlan() {
-        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        Log.d("BACKSTACK", "" + getSupportFragmentManager().getBackStackEntryCount());
+//        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//        Log.d("BACKSTACK", "" + getSupportFragmentManager().getBackStackEntryCount());
         // Create new fragment and transaction
         homePlanFragment = HomePlanFragment.newInstance("","", apiService, this);
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
@@ -217,7 +226,10 @@ public class MainActivity extends AppCompatActivity
         // Commit the transaction
         transaction.commit();
 
-        getDrawerView().setCheckedItem(R.id.nav_home);
+        NavigationView drawerView = getDrawerView();
+        if (drawerView != null) {
+            drawerView.setCheckedItem(R.id.nav_home);
+        }
     }
 
     private void goToRooms() {
@@ -233,8 +245,10 @@ public class MainActivity extends AppCompatActivity
         // Commit the transaction
         transaction.commit();
 
-        getDrawerView().setCheckedItem(R.id.nav_rooms);
-
+        NavigationView drawerView = getDrawerView();
+        if (drawerView != null) {
+            drawerView.setCheckedItem(R.id.nav_rooms);
+        }
 //        tabLayout.addTab();
     }
 
@@ -255,13 +269,19 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setVisibility(View.VISIBLE);
         ((OneRoomFragment) newFragment).setTabLayout(tabLayout);
 
-        getDrawerView().setCheckedItem(R.id.nav_rooms);
+        NavigationView drawerView = getDrawerView();
+        if (drawerView != null) {
+            drawerView.setCheckedItem(R.id.nav_rooms);
+        }
     }
 
     private NavigationView getDrawerView() {
         if (drawerView == null) {
-            drawerView = drawerLayout.findViewById(R.id.nav_view);
-            return (NavigationView) drawerView;
+            if (drawerLayout != null) {
+                drawerView = drawerLayout.findViewById(R.id.nav_view);
+                return (NavigationView) drawerView;
+            }
+            return null;
         } else {
             return (NavigationView) drawerView;
         }
@@ -270,9 +290,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof HomePlanFragment) {
-            getDrawerView().setCheckedItem(R.id.nav_home);
+            NavigationView drawerView = getDrawerView();
+            if (drawerView != null) {
+                drawerView.setCheckedItem(R.id.nav_home);
+            }
         } else if (fragment instanceof RoomsFragment) {
-            getDrawerView().setCheckedItem(R.id.nav_rooms);
+            NavigationView drawerView = getDrawerView();
+            if (drawerView != null) {
+                drawerView.setCheckedItem(R.id.nav_rooms);
+            }
         }
         super.onAttachFragment(fragment);
     }
@@ -367,7 +393,7 @@ public class MainActivity extends AppCompatActivity
             apiAddress = getApiAddress();
             SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
             username = sharedPref.getString(getString(R.string.saved_username_key), null);
-            password = sharedPref.getString(getString(R.string.saved_username_password), null);
+            password = sharedPref.getString(getString(R.string.saved_password_key), null);
             return this;
         }
     }

@@ -49,5 +49,5 @@ Aliquam vel eros tellus. Aenean ultricies fringilla risus ac consequat. Donec ma
         completions."
     </string>
     <string name="saved_username_key">username_key</string>
-    <string name="saved_username_password">key_password</string>
+    <string name="saved_password_key">key_password</string>
 </resources>

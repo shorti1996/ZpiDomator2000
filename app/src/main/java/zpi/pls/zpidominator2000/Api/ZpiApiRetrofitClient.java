@@ -22,16 +22,21 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ZpiApiRetrofitClient {
 
     public static final int HTTP_RESPONSE_OK = 200;
+
+    private static Retrofit retrofit = null;
     private static Request authorization;
 
     @NonNull
     private static String buildBaseUrl(String api) {
         return "http://" + api + "/api/";
     }
-
-    private static Retrofit retrofit = null;
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
     private static List<OnApiAddressChangedListener> callbacks = new LinkedList<>();
+
+    public static void clear() {
+        retrofit = null;
+        authorization = null;
+    }
 
     private static Retrofit getRetrofitHelper(String apiAddress, @Nullable String username, @Nullable String password) {
         if (authorization == null) {

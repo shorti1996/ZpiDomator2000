@@ -24,6 +24,9 @@ import java.util.List;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.Model.HouseTemp;
+import zpi.pls.zpidominator2000.Model.OutsideTemp;
+import zpi.pls.zpidominator2000.Model.RoomTemp;
 import zpi.pls.zpidominator2000.Model.Rooms;
 import zpi.pls.zpidominator2000.R;
 import zpi.pls.zpidominator2000.Utils;
@@ -141,12 +144,17 @@ public class HomePlanFragment extends Fragment {
     }
 
     private void loadRooms() {
-        apiService.listRooms()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(throwable -> {Utils.showToast(getContext(), "Couldn't load rooms for home plan");})
-                .doOnNext(rooms -> HomePlanFragment.this.roomList = rooms.getRooms())
-                .subscribe();
+        if (apiService != null) {
+            apiService.listRooms()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> new Rooms())
+                    .onErrorResumeNext(throwable -> {
+                        Utils.showToast(getContext(), "Couldn't load rooms for home plan");
+                    })
+                    .doOnNext(rooms -> HomePlanFragment.this.roomList = rooms.getRooms())
+                    .subscribe();
+        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -156,22 +164,27 @@ public class HomePlanFragment extends Fragment {
         floorGroup.setVisibility(View.GONE);
         floorProgressBar.setVisibility(View.VISIBLE);
 
-        apiService.getHouseTemp()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .onErrorResumeNext(throwable -> {
-                    Utils.showToast(getContext(), "Couldn't update house temp");
-                })
+        if (apiService != null) {
+            apiService.getHouseTemp()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .onErrorResumeNext(throwable -> {
+                        Utils.showToast(getContext(), "Couldn't update house temp");
+                    })
+                    .onErrorReturn(throwable -> new HouseTemp())
+                .doOnError(throwable -> {})
                 .zipWith(apiService.getOutsideTemp()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread()), (houseTemp, outsideTemp) -> {
-                    floorTemp.setText(String.format("%.1f °C", houseTemp.getHouseTemperature()));
-                    HomePlanFragment.this.outsideTemp.setText(String.format("%.1f °C", outsideTemp.getTemperature()));
-                    floorGroup.setVisibility(View.VISIBLE);
-                    floorProgressBar.setVisibility(View.GONE);
-                    return true;
-                })
-                .subscribe();
+                            .subscribeOn(Schedulers.io())
+                        .onErrorReturn(throwable -> new OutsideTemp())
+                            .observeOn(AndroidSchedulers.mainThread()), (houseTemp, outsideTemp) -> {
+                        floorTemp.setText(String.format("%.1f °C", houseTemp.getHouseTemperature()));
+                        HomePlanFragment.this.outsideTemp.setText(String.format("%.1f °C", outsideTemp.getTemperature()));
+                        floorGroup.setVisibility(View.VISIBLE);
+                        floorProgressBar.setVisibility(View.GONE);
+                        return true;
+                    })
+                    .subscribe();
+        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -191,6 +204,7 @@ public class HomePlanFragment extends Fragment {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .onErrorResumeNext(throwable -> {Utils.showToast(getContext(), "Couldn't update room temp");})
+                .onErrorReturn(throwable -> new RoomTemp())
                 .doOnNext(roomTemp -> {
                     HomePlanFragment.this.roomTemp.setText(String.format("%.1f °C", roomTemp.getTemperature()));
                     roomSetTemp.setText(String.format("%.1f °C", roomTemp.getSetTemperature()));
