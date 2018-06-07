@@ -69,7 +69,7 @@ public class ZpiApiRetrofitClient {
 
     public ZpiApiRetrofitClient(@Nullable String apiAddress, String username, String password, OnApiAddressChangedListener callback) {
         if (apiAddress == null) {
-            String apiServer = "212.237.52.192";
+            String apiServer = "192.168.137.122";
             apiAddress = apiServer;
         }
         retrofit = getRetrofitHelper(apiAddress, username, password);
