@@ -17,7 +17,7 @@ public class RoomTemp {
     private Double temperature;
     @SerializedName("setTemperature")
     @Expose
-    private Integer setTemperature;
+    private Double setTemperature;
 
     public Integer getRoomId() {
         return roomId;
@@ -35,11 +35,11 @@ public class RoomTemp {
         this.temperature = temperature;
     }
 
-    public Integer getSetTemperature() {
+    public Double getSetTemperature() {
         return setTemperature;
     }
 
-    public void setSetTemperature(Integer setTemperature) {
+    public void setSetTemperature(Double setTemperature) {
         this.setTemperature = setTemperature;
     }
 

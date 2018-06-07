@@ -84,10 +84,11 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cardViewFloorInfo"
+        android:id="@+id/cardViewRoomInfo"
         android:layout_width="0dp"
         android:layout_height="80dp"
         android:layout_marginTop="8dp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/cardViewName"
         app:layout_constraintStart_toStartOf="@+id/cardViewName"
         app:layout_constraintTop_toBottomOf="@+id/cardViewName">
@@ -95,6 +96,21 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/progressBar_room_card"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_room"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/floor_info_room_name"
@@ -107,7 +123,7 @@
                 android:text="Pokój 1"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/floor_info_room_temp_label"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_room"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Pokój 1" />
@@ -117,31 +133,37 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Temp. w pokoju"
-                app:layout_constraintEnd_toStartOf="@+id/floor_info_room_settemp_label"
+                app:layout_constraintEnd_toEndOf="@+id/floor_info_room_temp"
+                app:layout_constraintStart_toStartOf="@+id/floor_info_room_temp"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/floor_info_room_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="21 °C"
+                android:layout_marginStart="8dp"
+                android:text="21.9 °C"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                app:layout_constraintEnd_toEndOf="@+id/floor_info_room_temp_label"
-                app:layout_constraintStart_toStartOf="@+id/floor_info_room_temp_label"
+                app:layout_constraintEnd_toStartOf="@+id/floor_info_room_settemp"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/floor_info_room_temp_label"
+                app:layout_constraintStart_toStartOf="@+id/guideline_room"
                 app:layout_constraintTop_toBottomOf="@+id/floor_info_room_temp_label"
-                tools:text="21 °C" />
+                tools:text="21.9 °C" />
 
             <TextView
                 android:id="@+id/floor_info_room_settemp_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Zadana temp."
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/floor_info_room_settemp"
+                app:layout_constraintStart_toStartOf="@+id/floor_info_room_settemp"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Zadana temp." />
 
@@ -150,16 +172,131 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="4dp"
-                android:text="22 °C"
+                android:text="22.2 °C"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                app:layout_constraintEnd_toEndOf="@+id/floor_info_room_settemp_label"
-                app:layout_constraintStart_toStartOf="@+id/floor_info_room_settemp_label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/floor_info_room_temp"
                 app:layout_constraintTop_toBottomOf="@+id/floor_info_room_settemp_label"
-                tools:text="22 °C" />
+                tools:text="22.2 °C" />
 
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline_room"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.26" />
 
+            <android.support.constraint.Group
+                android:id="@+id/group_room"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="floor_info_room_temp,floor_info_room_settemp_label,floor_info_room_settemp,floor_info_room_temp_label" />
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardViewFloorInfo"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/cardViewName"
+        app:layout_constraintStart_toStartOf="@+id/cardViewName"
+        app:layout_constraintTop_toBottomOf="@+id/cardViewName">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ProgressBar
+                android:id="@+id/progressBar_floor_card"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline_floor"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/floor_info_idunno_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dom"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline_floor"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/floor_info_floor_temp_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Temp. średnia"
+                app:layout_constraintEnd_toEndOf="@+id/floor_info_floor_temp"
+                app:layout_constraintStart_toStartOf="@+id/floor_info_floor_temp"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/floor_info_floor_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:text="21.3 °C"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/floor_info_outside_temp_val"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="@+id/guideline_floor"
+                app:layout_constraintTop_toBottomOf="@+id/floor_info_floor_temp_label"
+                tools:text="21.3 °C" />
+
+            <TextView
+                android:id="@+id/floor_info_outside_temp_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Na zewnątrz"
+                app:layout_constraintEnd_toEndOf="@+id/floor_info_outside_temp_val"
+                app:layout_constraintStart_toStartOf="@+id/floor_info_outside_temp_val"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Na zewnątrz" />
+
+            <TextView
+                android:id="@+id/floor_info_outside_temp_val"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="22.1 °C"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/floor_info_floor_temp"
+                app:layout_constraintTop_toBottomOf="@+id/floor_info_outside_temp_label"
+                tools:text="22.1 °C" />
+
+            <android.support.constraint.Guideline
+                android:id="@+id/guideline_floor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.26" />
+
+            <android.support.constraint.Group
+                android:id="@+id/group_floor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="floor_info_outside_temp_val,floor_info_outside_temp_label,floor_info_floor_temp,floor_info_floor_temp_label" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 
@@ -168,10 +305,10 @@
         layout="@layout/parter_layout"
         android:layout_width="350dp"
         android:layout_height="350dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardViewFloorInfo" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"

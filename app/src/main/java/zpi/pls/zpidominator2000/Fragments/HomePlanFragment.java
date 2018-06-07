@@ -1,20 +1,34 @@
 package zpi.pls.zpidominator2000.Fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Group;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.List;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.Model.HouseTemp;
+import zpi.pls.zpidominator2000.Model.OutsideTemp;
+import zpi.pls.zpidominator2000.Model.RoomTemp;
+import zpi.pls.zpidominator2000.Model.Rooms;
 import zpi.pls.zpidominator2000.R;
 import zpi.pls.zpidominator2000.Utils;
 
@@ -28,6 +42,7 @@ import zpi.pls.zpidominator2000.Utils;
  * create an instance of this fragment.
  */
 public class HomePlanFragment extends Fragment {
+    private static final String LOG_TAG = HomePlanFragment.class.getSimpleName();
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -45,6 +60,20 @@ public class HomePlanFragment extends Fragment {
     boolean isOnZeroFloor = true;
 
     private OnFragmentInteractionListener mListener;
+    private CardView floorInfoCard;
+    private CardView roomInfoCard;
+    private ZpiApiService apiService;
+    private TextView floorTemp;
+    private TextView outsideTemp;
+    private TextView roomTemp;
+    private TextView roomSetTemp;
+    private List<Rooms.Room> roomList;
+    private TextView roomName;
+    private RoomsFragment.OnRoomSelectedListener onRoomSelectedListener;
+    private Group floorGroup;
+    private Group roomGroup;
+    private ProgressBar floorProgressBar;
+    private ProgressBar roomProgressBar;
 
     public HomePlanFragment() {
         // Required empty public constructor
@@ -59,12 +88,17 @@ public class HomePlanFragment extends Fragment {
      * @return A new instance of fragment HomePlanFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HomePlanFragment newInstance(String param1, String param2) {
+    public static HomePlanFragment newInstance(String param1,
+                                               String param2,
+                                               ZpiApiService zpiApiService,
+                                               RoomsFragment.OnRoomSelectedListener onRoomSelectedListener) {
         HomePlanFragment fragment = new HomePlanFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
+        fragment.apiService = zpiApiService;
+        fragment.onRoomSelectedListener = onRoomSelectedListener;
         return fragment;
     }
 
@@ -94,8 +128,91 @@ public class HomePlanFragment extends Fragment {
 /*        homePlanIv.setOnClickListener(view1 -> {
             swapFloor();
         });*/
-        loadFloor(isOnZeroFloor);
+        floorInfoCard = view.findViewById(R.id.cardViewFloorInfo);
+        roomInfoCard = view.findViewById(R.id.cardViewRoomInfo);
+        floorTemp = view.findViewById(R.id.floor_info_floor_temp);
+        outsideTemp = view.findViewById(R.id.floor_info_outside_temp_val);
+        floorGroup = view.findViewById(R.id.group_floor);
+        floorProgressBar = view.findViewById(R.id.progressBar_floor_card);
 
+        roomTemp = view.findViewById(R.id.floor_info_room_temp);
+        roomSetTemp = view.findViewById(R.id.floor_info_room_settemp);
+        roomName = view.findViewById(R.id.floor_info_room_name);
+        roomGroup = view.findViewById(R.id.group_room);
+        roomProgressBar = view.findViewById(R.id.progressBar_room_card);
+
+        loadRooms();
+        loadFloor(isOnZeroFloor);
+    }
+
+    private void loadRooms() {
+        if (apiService != null) {
+            apiService.listRooms()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorReturn(throwable -> new Rooms())
+                    .onErrorResumeNext(throwable -> {
+                        Utils.showToast(getContext(), "Couldn't load rooms for home plan");
+                    })
+                    .doOnNext(rooms -> HomePlanFragment.this.roomList = rooms.getRooms())
+                    .subscribe();
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void showFloorInfoCard() {
+        floorInfoCard.setVisibility(View.VISIBLE);
+        roomInfoCard.setVisibility(View.INVISIBLE);
+        floorGroup.setVisibility(View.GONE);
+        floorProgressBar.setVisibility(View.VISIBLE);
+
+        if (apiService != null) {
+            apiService.getHouseTemp()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .onErrorResumeNext(throwable -> {
+                        Utils.showToast(HomePlanFragment.this.getContext(), "Couldn't update house temp");
+                    })
+                    .onErrorReturn(throwable -> new HouseTemp())
+                .doOnError(throwable -> {})
+                .zipWith(apiService.getOutsideTemp()
+                            .subscribeOn(Schedulers.io())
+                        .onErrorReturn(throwable -> new OutsideTemp())
+                            .observeOn(AndroidSchedulers.mainThread()), (houseTemp, outsideTemp) -> {
+                        floorTemp.setText(String.format("%.1f °C", houseTemp.getHouseTemperature()));
+                        HomePlanFragment.this.outsideTemp.setText(String.format("%.1f °C", outsideTemp.getTemperature()));
+                        floorGroup.setVisibility(View.VISIBLE);
+                        floorProgressBar.setVisibility(View.GONE);
+                        return true;
+                    })
+                    .subscribe();
+        }
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void showRoomInfoCard(Rooms.Room room) {
+        floorInfoCard.setVisibility(View.INVISIBLE);
+        roomInfoCard.setVisibility(View.VISIBLE);
+        roomGroup.setVisibility(View.GONE);
+        roomProgressBar.setVisibility(View.VISIBLE);
+        if (onRoomSelectedListener != null) {
+            roomInfoCard.setOnClickListener(v -> {
+                onRoomSelectedListener.onRoomListFragmentInteraction(room);
+            });
+        }
+
+        roomName.setText(room.getName());
+        apiService.getTempInRoom(room.getRoomId())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .onErrorResumeNext(throwable -> {Utils.showToast(getContext(), "Couldn't update room temp");})
+                .onErrorReturn(throwable -> new RoomTemp())
+                .doOnNext(roomTemp -> {
+                    HomePlanFragment.this.roomTemp.setText(String.format("%.1f °C", roomTemp.getTemperature()));
+                    roomSetTemp.setText(String.format("%.1f °C", roomTemp.getSetTemperature()));
+                    roomProgressBar.setVisibility(View.GONE);
+                    roomGroup.setVisibility(View.VISIBLE);
+                }).subscribe();
     }
 
     public void swapFloor() {
@@ -104,6 +221,8 @@ public class HomePlanFragment extends Fragment {
     }
 
     private void loadFloor(boolean isOnGroundFloor) {
+        showFloorInfoCard();
+
         View view = getView();
         if (view != null) {
             ViewGroup floor_content = view.findViewById(R.id.include_floor);
@@ -117,22 +236,22 @@ public class HomePlanFragment extends Fragment {
                 homeName.setText(R.string.ground_floor);
 
                 view.findViewById(R.id.button_parter1_1).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "1");
+                    goToRoom(0);
                 });
                 view.findViewById(R.id.button_parter1_2).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "1");
+                    goToRoom(0);
                 });
                 view.findViewById(R.id.button_parter2).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "2");
+                    goToRoom(1);
                 });
                 view.findViewById(R.id.button_parter3).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "3");
+                    goToRoom(2);
                 });
                 view.findViewById(R.id.button_parter4).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "4");
+                    goToRoom(3);
                 });
                 view.findViewById(R.id.button_parter5).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "5");
+                    goToRoom(4);
                 });
             } else {
                 getLayoutInflater().inflate(R.layout.pietro1_layout, floor_content);
@@ -143,21 +262,33 @@ public class HomePlanFragment extends Fragment {
                 homeName.setText(R.string.first_floor);
 
                 view.findViewById(R.id.button_pietro1_1).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "1");
+                    goToRoom(5);
                 });
                 view.findViewById(R.id.button_pietro1_2).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "2");
+                    goToRoom(6);
                 });
                 view.findViewById(R.id.button_pietro1_3).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "3");
+                    goToRoom(7);
                 });
                 view.findViewById(R.id.button_pietro1_4).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "4");
+                    goToRoom(8);
                 });
                 view.findViewById(R.id.button_pietro1_5).setOnClickListener(v -> {
-                    Utils.showToast(getContext(), "5");
+                    goToRoom(9);
                 });
             }
+        }
+    }
+
+    private void goToRoom(int index) {
+        if (roomList != null) {
+            if (!roomList.isEmpty()) {
+                showRoomInfoCard(roomList.get(index));
+            } else  {
+                Log.w(LOG_TAG, "Can't go to room because rooms list downloaded from server is empty");
+            }
+        } else {
+            Log.w(LOG_TAG, "Can't go to room because there are no rooms downloaded from server");
         }
     }
 

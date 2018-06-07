@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -21,6 +23,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import retrofit2.Retrofit;
 import zpi.pls.zpidominator2000.Api.ZpiApiRetrofitClient;
@@ -37,6 +43,23 @@ public class MainActivity extends AppCompatActivity
         ZpiApiRetrofitClient.OnApiAddressChangedListener,
         HomePlanFragment.HomePlanFragmentInteractionListener {
 
+    public static final int API_LOGIN_REQUEST_CODE = 1000;
+    public static final int API_LOGIN_RESULT_CODE_OK = 1;
+    private String username;
+
+    @IntDef(HOME)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface MainActivityDrawerState {
+    }
+
+    public interface MainActivityDrawerUpdateListener {
+        void onDrawerUpdate(MainActivityDrawerState state);
+    }
+
+    public static final int HOME = 0;
+    public static final int ROOMS = 1;
+    public static final int ONE_ROOM = 2;
+
     private static final String ONE_ROOM_BACKSTACK_NAME = "oneRoomFragmentBackstackName";
     private static final String HOME_PLAN_BACKSTACK_NAME = "homePlanFragmentBackstackName";
 
@@ -51,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -82,13 +106,86 @@ public class MainActivity extends AppCompatActivity
         toolbar = findViewById(R.id.toolbar);
         tabLayout = findViewById(R.id.tabs);
 
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
-        String defaultValue = getResources().getString(R.string.setting_api_address_default);
-        String apiAddress = sharedPref.getString(getString(R.string.setting_api_address_key), defaultValue);
-        retrofit = new ZpiApiRetrofitClient(apiAddress, this).getRetrofit();
+//        initializeApiAndShowHome();
+        ApiParams apiParams = new ApiParams().getParams();
+        String username = apiParams.getUsername();
+        String password = apiParams.getPassword();
+        if (username != null && password != null) {
+            initializeApiAndShowHome();
+        } else {
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivityForResult(loginIntent, API_LOGIN_REQUEST_CODE);
+        }
+//        retrofit = new ZpiApiRetrofitClient(apiAddress, username, password, this).getRetrofit();
+//        apiService = retrofit.create(ZpiApiService.class);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode != RESULT_CANCELED) {
+            if (API_LOGIN_REQUEST_CODE == requestCode) {
+                if (API_LOGIN_RESULT_CODE_OK == resultCode) {
+                    initializeApiAndShowHome();
+                } else {
+                    Utils.showToast(this, "Something went wrong with login");
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void initializeApiAndShowHome() {
+        ApiParams apiParams = new ApiParams().getParams();
+        String apiAddress = apiParams.getApiAddress();
+        username = apiParams.getUsername();
+        String password = apiParams.getPassword();
+        retrofit = new ZpiApiRetrofitClient(apiAddress, username, password, this).getRetrofit();
         apiService = retrofit.create(ZpiApiService.class);
 
+        getSupportFragmentManager().addOnBackStackChangedListener(this::updateNavDrawer);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        NavigationView drawerView = getDrawerView();
+        if (drawerView != null) {
+            TextView textInNavDrawer = drawerView.getHeaderView(0).findViewById(R.id.nav_drawer_header_text);
+            if (textInNavDrawer != null) {
+                textInNavDrawer.setText(username);
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         goToHomePlan();
+    }
+
+    @NonNull
+    public static String getApiAddress(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
+        String defaultValue = context.getResources().getString(R.string.setting_api_address_default);
+        return sharedPref.getString(context.getString(R.string.setting_api_address_key), defaultValue);
+    }
+
+    private void updateNavDrawer() {
+        android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
+        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+        if (backStackEntryCount == 0) {
+            NavigationView drawerView = getDrawerView();
+            if (drawerView != null) {
+                drawerView.setCheckedItem(R.id.nav_home);
+            }
+        }
+//        else {
+//            android.support.v4.app.FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(backStackEntryCount - 1);
+//            String tag = backStackEntry.getName();
+//            Fragment fragment = fragmentManager.findFragmentByTag(tag);
+//            int x = 0;
+//        }
+
     }
 
     @Override
@@ -126,8 +223,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void goToHomePlan() {
+//        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//        Log.d("BACKSTACK", "" + getSupportFragmentManager().getBackStackEntryCount());
         // Create new fragment and transaction
-        homePlanFragment = new HomePlanFragment();
+        homePlanFragment = HomePlanFragment.newInstance("","", apiService, this);
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
@@ -141,7 +240,10 @@ public class MainActivity extends AppCompatActivity
         // Commit the transaction
         transaction.commit();
 
-        getDrawerView().setCheckedItem(R.id.nav_home);
+        NavigationView drawerView = getDrawerView();
+        if (drawerView != null) {
+            drawerView.setCheckedItem(R.id.nav_home);
+        }
     }
 
     private void goToRooms() {
@@ -157,8 +259,10 @@ public class MainActivity extends AppCompatActivity
         // Commit the transaction
         transaction.commit();
 
-        getDrawerView().setCheckedItem(R.id.nav_rooms);
-
+        NavigationView drawerView = getDrawerView();
+        if (drawerView != null) {
+            drawerView.setCheckedItem(R.id.nav_rooms);
+        }
 //        tabLayout.addTab();
     }
 
@@ -179,13 +283,19 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setVisibility(View.VISIBLE);
         ((OneRoomFragment) newFragment).setTabLayout(tabLayout);
 
-        getDrawerView().setCheckedItem(R.id.nav_rooms);
+        NavigationView drawerView = getDrawerView();
+        if (drawerView != null) {
+            drawerView.setCheckedItem(R.id.nav_rooms);
+        }
     }
 
     private NavigationView getDrawerView() {
         if (drawerView == null) {
-            drawerView = drawerLayout.findViewById(R.id.nav_view);
-            return (NavigationView) drawerView;
+            if (drawerLayout != null) {
+                drawerView = drawerLayout.findViewById(R.id.nav_view);
+                return (NavigationView) drawerView;
+            }
+            return null;
         } else {
             return (NavigationView) drawerView;
         }
@@ -194,9 +304,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onAttachFragment(Fragment fragment) {
         if (fragment instanceof HomePlanFragment) {
-            getDrawerView().setCheckedItem(R.id.nav_home);
+            NavigationView drawerView = getDrawerView();
+            if (drawerView != null) {
+                drawerView.setCheckedItem(R.id.nav_home);
+            }
         } else if (fragment instanceof RoomsFragment) {
-            getDrawerView().setCheckedItem(R.id.nav_rooms);
+            NavigationView drawerView = getDrawerView();
+            if (drawerView != null) {
+                drawerView.setCheckedItem(R.id.nav_rooms);
+            }
         }
         super.onAttachFragment(fragment);
     }
@@ -217,6 +333,9 @@ public class MainActivity extends AppCompatActivity
             return true;
         } else if (id == R.id.nav_help) {
             Intent intent = new Intent(this, HelpActivity.class);
+            startActivity(intent);
+        } else if (id == R.id.nav_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
         }
 
@@ -266,5 +385,33 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSwapFloor() {
 
+    }
+
+    private class ApiParams {
+        private String apiAddress;
+        @Nullable private String username;
+        @Nullable private String password;
+
+        public String getApiAddress() {
+            return apiAddress;
+        }
+
+        @Nullable
+        public String getUsername() {
+            return username;
+        }
+
+        @Nullable
+        public String getPassword() {
+            return password;
+        }
+
+        public ApiParams getParams() {
+            apiAddress = getApiAddress();
+            SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
+            username = sharedPref.getString(getString(R.string.saved_username_key), null);
+            password = sharedPref.getString(getString(R.string.saved_password_key), null);
+            return this;
+        }
     }
 }

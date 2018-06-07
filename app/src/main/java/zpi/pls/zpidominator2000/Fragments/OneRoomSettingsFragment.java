@@ -2,6 +2,7 @@ package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.constraint.Group;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -61,6 +64,9 @@ public class OneRoomSettingsFragment extends Fragment {
     public OneRoomLightsAdapter lightsAdapter;
     public ImageButton tempUp;
     public ImageButton tempDown;
+    private Group tempGroup;
+    private ProgressBar tempProgressBar;
+    private ProgressBar lightsProgressBar;
 
     private ZpiApiService apiService;
     private int roomId;
@@ -68,8 +74,11 @@ public class OneRoomSettingsFragment extends Fragment {
     private double newTemp = 0;
     private AtomicInteger lightsToUpdateCount = new AtomicInteger(0);
     private AtomicBoolean shouldUpdateTemp = new AtomicBoolean(true);
+    private AtomicBoolean shouldUpdateLights = new AtomicBoolean(true);
     private PublishSubject<Integer> clicksUpSubject = PublishSubject.create();
     private PublishSubject<Integer> clicksDownSubject = PublishSubject.create();
+    private boolean isAfterInitialTempDownsync;
+    private boolean isAfterInitialLightsDownsync;
 
     public OneRoomSettingsFragment() {
         // Required empty public constructor
@@ -131,6 +140,10 @@ public class OneRoomSettingsFragment extends Fragment {
         lightsRv.setLayoutManager(new LinearLayoutManager(getContext()));
         tempDown = view.findViewById(R.id.one_room_temp_down);
         tempUp = view.findViewById(R.id.one_room_temp_up);
+        tempGroup = view.findViewById(R.id.group_temp_settings_card);
+        tempProgressBar = view.findViewById(R.id.progressBar_temp_setting_card);
+        lightsProgressBar = view.findViewById(R.id.progressBar_light_settings_card);
+
         RxView.clicks(tempDown).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(o -> {
 //            showToast(getContext(), "DONW");
@@ -156,7 +169,11 @@ public class OneRoomSettingsFragment extends Fragment {
         ping = Observable.interval(0L, UPDATE_PING_INTERVAL, TimeUnit.SECONDS, Schedulers.io());
         pingSubscription = ping.observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(tick -> updateSettings());
+                .subscribe(tick -> downsyncSettings());
+
+        tempGroup.setVisibility(View.INVISIBLE);
+        tempProgressBar.setVisibility(View.VISIBLE);
+        lightsProgressBar.setVisibility(View.VISIBLE);
 
         return view;
     }
@@ -164,13 +181,13 @@ public class OneRoomSettingsFragment extends Fragment {
     private void commitSetTemp() {
         Log.d(TAG, "Attempting to commit temperature to api");
         RoomTemp roomTemp = new RoomTemp();
-        roomTemp.setSetTemperature((int) getNewTemp());
+        roomTemp.setSetTemperature(getNewTemp());
         Observable<Response<Void>> setTempInRoomObservable = apiService.setTempInRoom(roomId, roomTemp);
 
         setTempInRoomObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> {
+                .onErrorResumeNext(x -> {
                     shouldUpdateTemp.set(true);
                     showToast(getContext(), "Couldn't set temperature");
                 })
@@ -191,27 +208,43 @@ public class OneRoomSettingsFragment extends Fragment {
         pingSubscription.dispose();
     }
 
-    private void updateSettings() {
-        updateTemperatures();
-        updateLights();
+    private void downsyncSettings() {
+        downsyncTemperatures();
+        downsyncLights();
     }
 
-    private void updateTemperatures() {
+    private void downsyncTemperatures() {
         if (!shouldUpdateTemp.get()) {
+            showToast(getContext(), "Not updating temperature, pending changes");
             return;
         }
         Observable<RoomTemp> roomTempObservable = apiService.getTempInRoom(roomId);
         roomTempObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> showToast(getContext(), "Couldn't get temperature"))
+                .onErrorResumeNext(x -> {showToast(getContext(), "Couldn't get temperature");})
                 .subscribe(x -> {
-                    setCurrTemp(x.getTemperature().intValue());
-                    setNewTemp(x.getSetTemperature());
+                    if (x != null) {
+                        Double temperature = x.getTemperature();
+                        if (temperature != null) {
+                            setCurrTemp(temperature.intValue());
+                        }
+                        Double setTemperature = x.getSetTemperature();
+                        if (setTemperature != null) {
+                            setNewTemp(setTemperature);
+                        }
+                        if (!isAfterInitialTempDownsync) {
+                            if (setTemperature != null && temperature != null) {
+                                tempGroup.setVisibility(View.VISIBLE);
+                                tempProgressBar.setVisibility(View.GONE);
+                                isAfterInitialTempDownsync = true;
+                            }
+                        }
+                    }
                 });
     }
 
-    private void updateLights() {
+    private void downsyncLights() {
         if (lightsToUpdateCount.get() > 0) {
             showToast(getContext(), "Not updating lights, pending changes");
             return;
@@ -220,28 +253,44 @@ public class OneRoomSettingsFragment extends Fragment {
         roomLightObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(x -> showToast(getContext(), "Couldn't get lights"))
+                .onErrorResumeNext(x -> {showToast(getContext(), "Couldn't get lights");})
+                .onErrorReturn(throwable -> new Lights())
                 .subscribe(x -> {
-                    for (Lights.Light light : x.getLights()) {
-                        Log.d(TAG, light.getName());
+                    if (x != null) {
+                        List<Lights.Light> lights = x.getLights();
+                        if (lights != null) {
+                            for (Lights.Light light : lights) {
+                                Log.d(TAG, light.getName() + ", " + light.getState());
+                            }
+                            if (lightsAdapter == null) {
+                                lightsAdapter = new OneRoomLightsAdapter(x, this::scheduleUpsyncLight);
+                                lightsRv.setAdapter(lightsAdapter);
+                                if (!isAfterInitialLightsDownsync) {
+                                    lightsProgressBar.setVisibility(View.GONE);
+                                    isAfterInitialLightsDownsync = true;
+                                }
+                            }
+                            lightsAdapter.swapValues(x);
+                        }
                     }
-                    if (lightsAdapter == null) {
-                        lightsAdapter = new OneRoomLightsAdapter(x, this::scheduleUpdateLight);
-                        lightsRv.setAdapter(lightsAdapter);
-                    }
-                    lightsAdapter.swapValues(x);
                 });
     }
 
-    private void scheduleUpdateLight(Lights.Light light, boolean enabled) {
+    private void scheduleUpsyncLight(Lights.Light light, boolean enabled) {
+        lightsToUpdateCount.incrementAndGet();
+        Log.d("Lights", "Light " + light.getId() + " update scheduled, to sync: " + lightsToUpdateCount.get());
         Observable<Response<Void>> setLightObservable = apiService.setLightInRoom(roomId, light.getId(), enabled);
         setLightObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .doOnError(throwable -> showToast(getContext(), String.format("Can't set light: %s", throwable.getMessage())))
+                .onErrorResumeNext(throwable -> {
+                    showToast(getContext(), String.format("Can't set light: %s", ""));
+                    lightsToUpdateCount.decrementAndGet();
+                })
                 .subscribe(x -> {
-//                    showToast(getContext(), "Light updated");
-                    lightsToUpdateCount.getAndDecrement();
+                    showToast(getContext(), "Light updated");
+                    lightsToUpdateCount.decrementAndGet();
+                    Log.d("Lights", "Light updated, left to set: " + lightsToUpdateCount.get());
                 });
     }
 

@@ -3,12 +3,16 @@ package zpi.pls.zpidominator2000.Fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -16,14 +20,18 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.Model.Power;
 import zpi.pls.zpidominator2000.Model.TempHistory;
 import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.Utils;
 
 
 /**
@@ -39,7 +47,13 @@ public class OneRoomStatsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private final int N_LAST_TEMP_ENTRIES_DEFAULT = 300;
+    private final int N_LAST_TEMP_ENTRIES_DAY = 30;
+    private final int N_LAST_TEMP_ENTRIES_MONTH = 300;
+    private final int N_LAST_POW_ENTRIES_DAY = 30;
+    private final int N_LAST_POW_ENTRIES_MONTH = 300;
+    private final int N_LAST_LIGHT_ENTRIES_DAY = 30;
+    private final int N_LAST_LIGHT_ENTRIES_MONTH = 300;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -48,7 +62,17 @@ public class OneRoomStatsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
     private ZpiApiService apiService;
     private int roomId;
-    public LineChart tempLineChart;
+
+    public LineChart chart1;
+    public LineChart chart2;
+    private TextView chart1Title;
+    private TextView chart2Title;
+    private Spinner spinner;
+    private ProgressBar progressBar2;
+    private ProgressBar progressBar1;
+
+    private ArrayAdapter<String> spinnerAdapter;
+    private String[] spinnerItems;
 
     public OneRoomStatsFragment() {
         // Required empty public constructor
@@ -88,39 +112,180 @@ public class OneRoomStatsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_one_room_stats, container, false);
-        tempLineChart = view.findViewById(R.id.one_room_stats_temp_line_chart);
+        chart1 = view.findViewById(R.id.one_room_stats_temp_day_line_chart);
+        chart1.setVisibility(View.INVISIBLE);
+        chart2 = view.findViewById(R.id.one_room_stats_temp_month_line_chart);
+        chart2.setVisibility(View.INVISIBLE);
+        chart1Title = view.findViewById(R.id.chart_1_title);
+        chart2Title = view.findViewById(R.id.chart_2_title);
+        spinner = view.findViewById(R.id.one_room_stats_charts_spinner);
+        spinnerItems = getResources().getStringArray(R.array.stats_spinner_array);
+        spinnerAdapter = new ArrayAdapter<>(this.getContext(),
+                R.layout.support_simple_spinner_dropdown_item,
+                spinnerItems);
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String spinnerItem = spinnerItems[position];
+                if (spinnerItem.equals(getString(R.string.stats_spinner_temp))) {
+                    loadTemp();
+                } else if (spinnerItem.equals(getString(R.string.stats_spinner_lights))) {
+                    loadLight();
+                } else if (spinnerItem.equals(getString(R.string.stats_spinner_power))) {
+                    loadPower();
+                }
+            }
 
-        Observable<TempHistory> tempHistoryObservable = apiService.getTempHistoryForRoom(roomId, N_LAST_TEMP_ENTRIES_DEFAULT);
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // :(
+            }
+        });
+        progressBar1 = view.findViewById(R.id.progressBar_stats_1);
+        progressBar1.setVisibility(View.VISIBLE);
+        progressBar2 = view.findViewById(R.id.progressBar_stats_2);
+        progressBar2.setVisibility(View.VISIBLE);
 
-        tempHistoryObservable
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .doOnError(
-                        x -> {
-                            Log.d("AA", x.getMessage());
-                            Toast.makeText(getContext(), "Couldn't load temp history", Toast.LENGTH_SHORT).show();
-                        })
-
-
-                .onErrorReturnItem(new TempHistory())
-                .subscribe((TempHistory tempHistory) -> {
-                    List<Entry> entries = new ArrayList<>();
-                    List<Double> temperatureHistory = tempHistory.getTemperatureHistory();
-                    if (temperatureHistory != null && !temperatureHistory.isEmpty()) {
-                        for (int i = 0; i < temperatureHistory.size(); i++) {
-                            Integer historyEntry = (temperatureHistory.get(i)).intValue();
-                            Log.d("AA", "" + historyEntry);
-                            entries.add(new Entry(i, historyEntry));
-                        }
-                        LineDataSet lineDataSet = new LineDataSet(entries, "Temperatura");
-                        LineData lineData = new LineData(lineDataSet);
-                        tempLineChart.setData(lineData);
-                        tempLineChart.invalidate();
-                    } else {
-                        Log.d("AA", "empty history :(");
-                    }
-                });
         return view;
+    }
+
+    private void loadTemp() {
+        Observable<TempHistory> tempHistoryObservableMonth = apiService.getTempHistoryForRoom(roomId, 10);
+        Observable<TempHistory> tempHistoryObservableDay = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
+
+//        List<Double> tempDay = Sine.generate(100, 1f);
+//        List<Double> tempMonth = Sine.generate(300, 1f);
+//        loadToChart(chart1, tempDay, "Temperatura");
+//        loadToChart(chart2, tempMonth, "Temperatura");
+
+        resetChartData(chart1, progressBar1);
+        resetChartData(chart2, progressBar2);
+
+
+        chart1Title.setText("Temperatura 24 h");
+        chart2Title.setText("Temperatura 7 dni");
+
+        tempHistoryObservableDay
+                .timeout(10, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(tempHistoryDay -> {
+                    loadToChart(chart1, tempHistoryDay.getTemperatureHistory(), "Temperatura");
+                    chart1.setVisibility(View.VISIBLE);
+                    progressBar1.setVisibility(View.GONE);
+                })
+                .concatWith(tempHistoryObservableMonth
+                        .timeout(10, TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(tempHistoryMonth -> {
+                            loadToChart(chart2, tempHistoryMonth.getTemperatureHistory(), "Temperatura");
+                            chart2.setVisibility(View.VISIBLE);
+                            progressBar2.setVisibility(View.GONE);
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> {
+                    Utils.showToast(getContext(), "BAD");
+                })
+                .subscribe();
+    }
+
+    private void loadLight() {
+        Observable<Power> powerHistoryObservableMonth = apiService.getPowerHistoryForRoom(roomId, 10);
+        Observable<Power> powerHistoryObservableDay = apiService.getPowerHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
+
+        resetChartData(chart1, progressBar1);
+        resetChartData(chart2, progressBar2);
+
+        chart1Title.setText("Światło 24 h");
+        chart2Title.setText("Światło 7 dni");
+
+        powerHistoryObservableDay
+                .timeout(10, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(tempHistoryDay -> {
+                    loadToChart(chart1, tempHistoryDay.getLightPowerHistory(), "Światło");
+                    chart1.setVisibility(View.VISIBLE);
+                    progressBar1.setVisibility(View.GONE);
+                })
+                .concatWith(powerHistoryObservableMonth
+                        .timeout(10, TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(tempHistoryMonth -> {
+                            loadToChart(chart2, tempHistoryMonth.getLightPowerHistory(), "Światło");
+                            chart2.setVisibility(View.VISIBLE);
+                            progressBar2.setVisibility(View.GONE);
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> {
+                    Utils.showToast(getContext(), "BAD");
+                })
+                .subscribe();
+    }
+
+    private void loadPower() {
+        Observable<Power> powerHistoryObservableMonth = apiService.getPowerHistoryForRoom(roomId, 10);
+        Observable<Power> powerHistoryObservableDay = apiService.getPowerHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
+
+        resetChartData(chart1, progressBar1);
+        resetChartData(chart2, progressBar2);
+
+        chart1Title.setText("Energia 24 h");
+        chart2Title.setText("Energia 7 dni");
+
+        powerHistoryObservableDay
+                .timeout(10, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(tempHistoryDay -> {
+                    loadToChart(chart1, tempHistoryDay.getClimatPowerHistory(), "Energia");
+                    chart1.setVisibility(View.VISIBLE);
+                    progressBar1.setVisibility(View.GONE);
+                })
+                .concatWith(powerHistoryObservableMonth
+                        .timeout(10, TimeUnit.SECONDS)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnNext(tempHistoryMonth -> {
+                            loadToChart(chart2, tempHistoryMonth.getClimatPowerHistory(), "Energia");
+                            chart2.setVisibility(View.VISIBLE);
+                            progressBar2.setVisibility(View.GONE);
+                        })
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> {
+                    Utils.showToast(getContext(), "BAD");
+                })
+                .subscribe();
+    }
+
+    private static void resetChartData(LineChart lineChart, @Nullable ProgressBar progressBar) {
+        lineChart.setData(null);
+        lineChart.invalidate();
+
+        lineChart.setVisibility(View.INVISIBLE);
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private static void loadToChart(LineChart lineChart, List<Double> values, String dataLabel) {
+        List<Entry> entries = new ArrayList<>();
+        if (values != null && !values.isEmpty()) {
+            for (int i = 0; i < values.size(); i++) {
+                Double historyEntry = values.get(i);
+                entries.add(new Entry(i, historyEntry.floatValue()));
+            }
+            LineDataSet lineDataSet = new LineDataSet(entries, dataLabel);
+            LineData lineData = new LineData(lineDataSet);
+            lineChart.setData(lineData);
+            lineChart.invalidate();
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -160,5 +325,22 @@ public class OneRoomStatsFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    /**
+     * It's for debug
+     */
+    static class Sine {
+
+        public static List<Double> generate(int count, float step) {
+            List<Double> sinVals = new LinkedList<>();
+            float curr = 0f;
+            for (int i = 0; i < count; i++) {
+                double v = Math.sin(Math.toRadians(curr));
+                sinVals.add(v);
+                curr += step;
+            }
+            return sinVals;
+        }
     }
 }
