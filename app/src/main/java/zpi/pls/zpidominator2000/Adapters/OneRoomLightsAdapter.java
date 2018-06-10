@@ -16,6 +16,10 @@ import zpi.pls.zpidominator2000.R;
 /**
  * Created by wojciech.liebert on 14.05.2018.
  */
+
+/**
+ * {@link RecyclerView.Adapter} that can display a {@link zpi.pls.zpidominator2000.Model.Lights.Light}
+ */
 public class OneRoomLightsAdapter extends RecyclerView.Adapter<OneRoomLightsAdapter.ViewHolder> {
 
     private List<Lights.Light> mValues;
@@ -39,18 +43,7 @@ public class OneRoomLightsAdapter extends RecyclerView.Adapter<OneRoomLightsAdap
         holder.mItem = light;
         holder.mNameView.setText(light.getName());
         holder.mSwitch.setChecked(light.getState());
-//        holder.mSwitch.setOnCheckedChangeListener((theSwitch, newState) -> {
-//            mListener.onLightStateChanged(light, newState);
-//        });
         holder.mSwitch.setOnClickListener(view -> mListener.onLightStateChanged(light, ((Switch) view).isChecked()));
-
-//        holder.mView.setOnClickListener(v -> {
-//            if (null != mListener) {
-//                // Notify the active callbacks interface (the activity, if the
-//                // fragment is attached to one) that an item has been selected.
-//                mListener.onFragmentInteraction(holder.mItem);
-//            }
-//        });
     }
 
     @Override

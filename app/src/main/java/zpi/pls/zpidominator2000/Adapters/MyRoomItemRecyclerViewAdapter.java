@@ -11,12 +11,10 @@ import java.util.List;
 import zpi.pls.zpidominator2000.Fragments.RoomsFragment.OnRoomSelectedListener;
 import zpi.pls.zpidominator2000.Model.Rooms;
 import zpi.pls.zpidominator2000.R;
-import zpi.pls.zpidominator2000.dummy.DummyContent.DummyItem;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnRoomSelectedListener}.
- * TODO: Replace the implementation with code for your data type.
+ * {@link RecyclerView.Adapter} that can display a {@link zpi.pls.zpidominator2000.Model.Rooms.Room}
+ * and makes a call to the specified {@link OnRoomSelectedListener}.
  */
 public class MyRoomItemRecyclerViewAdapter extends RecyclerView.Adapter<MyRoomItemRecyclerViewAdapter.ViewHolder> {
 

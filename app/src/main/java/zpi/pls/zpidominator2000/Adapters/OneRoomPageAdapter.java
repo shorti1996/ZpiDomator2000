@@ -11,6 +11,9 @@ import java.util.List;
  * Created by wojciech.liebert on 11.05.2018.
  */
 
+/**
+ * {@link android.support.v4.view.PagerAdapter} that can display a relevant informations about a selected {@link zpi.pls.zpidominator2000.Model.Rooms.Room}
+ */
 public class OneRoomPageAdapter extends FragmentStatePagerAdapter {
     List<Fragment> fragmentsInsideMe;
     List<String> titles;
