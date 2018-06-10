@@ -363,7 +363,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     @Override
-    public void OnApiAddressChanged() {
+    public void OnApiAddressChanged(String newAddress) {
         // :(
     }
 

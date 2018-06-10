@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -31,9 +32,10 @@ public class SettingsActivity extends AppCompatActivityWithBackButton {
                     SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     String newAddress = String.valueOf(apiAddressVal.getText());
+                    Log.d("SAVE", "Saving api address: " + newAddress);
                     editor.putString(getString(R.string.setting_api_address_key), newAddress);
                     editor.commit();
-                    ZpiApiRetrofitClient.changeApiServer(newAddress);
+                    ZpiApiRetrofitClient.changeApiServer(newAddress, getBaseContext());
                     restartApp();
                 });
         logoutBtn = findViewById(R.id.settings_user_logout_btn);

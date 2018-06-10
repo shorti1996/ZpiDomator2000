@@ -1,5 +1,7 @@
 package zpi.pls.zpidominator2000.Api;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -14,6 +16,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import zpi.pls.zpidominator2000.R;
 
 /**
  * Created by wojciech.liebert on 13.05.2018.
@@ -23,6 +26,7 @@ public class ZpiApiRetrofitClient {
 
     public static final int HTTP_RESPONSE_OK = 200;
 
+    private static String apiServer = "212.237.52.192";
     private static Retrofit retrofit = null;
     private static Request authorization;
 
@@ -41,12 +45,15 @@ public class ZpiApiRetrofitClient {
     private static Retrofit getRetrofitHelper(String apiAddress, @Nullable String username, @Nullable String password) {
         if (authorization == null) {
             if (username != null && password != null) {
+//                httpClient.addInterceptor(chain -> {
+//                    Request request = chain.request().newBuilder()
+//                            .addHeader("Authorization", Credentials.basic(username, password))
+//                            .build();
+//                    return chain.proceed(request);
+//                });
                 httpClient.authenticator((route, response) -> {
-                    //                                Credentials.basic("User1", "UserPassword1"))
                     authorization = response.request().newBuilder()
-                            .header("Authorization",
-//                                Credentials.basic("User1", "UserPassword1"))
-                                    Credentials.basic(username, password))
+                            .header("Authorization", Credentials.basic(username, password))
                             .build();
                     return authorization;
                 });
@@ -69,22 +76,28 @@ public class ZpiApiRetrofitClient {
 
     public ZpiApiRetrofitClient(@Nullable String apiAddress, String username, String password, OnApiAddressChangedListener callback) {
         if (apiAddress == null) {
-            String apiServer = "212.237.52.192";
+//            String apiServer = "212.237.52.192";
             apiAddress = apiServer;
         }
         retrofit = getRetrofitHelper(apiAddress, username, password);
         Log.d("AA", retrofit.baseUrl().toString());
-        callbacks.add(callback);
+        if (callback != null) {
+            callbacks.add(callback);
+        }
     }
 
-    public static void changeApiServer(String newServerAddress) {
+    public static void changeApiServer(String newServerAddress, Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(context.getString(R.string.setting_api_address_key), newServerAddress);
+        editor.commit();
         retrofit = getRetrofitHelper(newServerAddress, null, null);
         for (OnApiAddressChangedListener listener : callbacks) {
-            listener.OnApiAddressChanged();
+            listener.OnApiAddressChanged(newServerAddress);
         }
     }
 
     public interface OnApiAddressChangedListener {
-        void OnApiAddressChanged();
-        }
+        void OnApiAddressChanged(String newAddress);
+    }
 }

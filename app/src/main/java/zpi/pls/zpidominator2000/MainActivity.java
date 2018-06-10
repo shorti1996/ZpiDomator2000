@@ -378,7 +378,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void OnApiAddressChanged() {
+    public void OnApiAddressChanged(String newAddress) {
+        retrofit = new ZpiApiRetrofitClient(newAddress, null, null, null).getRetrofit();
         apiService = retrofit.create(ZpiApiService.class);
     }
 
@@ -407,8 +408,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         public ApiParams getParams() {
-            apiAddress = getApiAddress();
             SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
+            apiAddress = sharedPref.getString(getString(R.string.setting_api_address_key), null);
             username = sharedPref.getString(getString(R.string.saved_username_key), null);
             password = sharedPref.getString(getString(R.string.saved_password_key), null);
             return this;
