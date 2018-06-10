@@ -19,6 +19,11 @@ import io.reactivex.schedulers.Schedulers;
 
 public class Utils {
 
+    /**
+     * Show toast with {@link  Toast#LENGTH_SHORT}
+     * @param context needed to even touch the UI
+     * @param text Text of the toast
+     */
     public static void showToast(Context context, String text) {
         if (context != null) {
             Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
