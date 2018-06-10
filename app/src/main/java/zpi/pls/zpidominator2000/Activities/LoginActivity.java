@@ -1,4 +1,4 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -43,6 +43,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import zpi.pls.zpidominator2000.Api.ZpiApiRetrofitClient;
 import zpi.pls.zpidominator2000.Api.ZpiApiService;
+import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.Utils;
 
 import static android.Manifest.permission.READ_CONTACTS;
 

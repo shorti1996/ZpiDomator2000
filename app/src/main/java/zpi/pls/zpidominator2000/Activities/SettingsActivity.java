@@ -1,4 +1,4 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,8 +10,9 @@ import android.widget.EditText;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
-import zpi.pls.AppCompatActivityWithBackButton;
 import zpi.pls.zpidominator2000.Api.ZpiApiRetrofitClient;
+import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.Utils;
 
 public class SettingsActivity extends AppCompatActivityWithBackButton {
 

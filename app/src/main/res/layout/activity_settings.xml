@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="zpi.pls.zpidominator2000.SettingsActivity">
+    tools:context="zpi.pls.zpidominator2000.Activities.SettingsActivity">
 
     <TextView
         android:id="@+id/settings_api_address_label"

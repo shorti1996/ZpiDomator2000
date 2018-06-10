@@ -1,4 +1,4 @@
-package zpi.pls.zpidominator2000;
+package zpi.pls.zpidominator2000.Activities;
 
 import android.app.FragmentManager;
 import android.content.Context;
@@ -35,6 +35,8 @@ import zpi.pls.zpidominator2000.Fragments.HomePlanFragment;
 import zpi.pls.zpidominator2000.Fragments.OneRoomFragment;
 import zpi.pls.zpidominator2000.Fragments.RoomsFragment;
 import zpi.pls.zpidominator2000.Model.Rooms;
+import zpi.pls.zpidominator2000.R;
+import zpi.pls.zpidominator2000.Utils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,

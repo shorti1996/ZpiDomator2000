@@ -45,6 +45,9 @@ public class ZpiApiRetrofitClient {
     private static Retrofit getRetrofitHelper(String apiAddress, @Nullable String username, @Nullable String password) {
         if (authorization == null) {
             if (username != null && password != null) {
+                // TODO It destroys the whole idea of authentication
+                // Possible easy fix: store this Request instead of static field "authorization"
+                // I don't have the time right now
 //                httpClient.addInterceptor(chain -> {
 //                    Request request = chain.request().newBuilder()
 //                            .addHeader("Authorization", Credentials.basic(username, password))
@@ -76,7 +79,6 @@ public class ZpiApiRetrofitClient {
 
     public ZpiApiRetrofitClient(@Nullable String apiAddress, String username, String password, OnApiAddressChangedListener callback) {
         if (apiAddress == null) {
-//            String apiServer = "212.237.52.192";
             apiAddress = apiServer;
         }
         retrofit = getRetrofitHelper(apiAddress, username, password);

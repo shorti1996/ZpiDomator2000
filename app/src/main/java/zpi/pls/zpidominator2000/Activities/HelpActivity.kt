@@ -1,7 +1,7 @@
-package zpi.pls.zpidominator2000
+package zpi.pls.zpidominator2000.Activities
 
 import android.os.Bundle
-import zpi.pls.AppCompatActivityWithBackButton
+import zpi.pls.zpidominator2000.R
 
 class HelpActivity : AppCompatActivityWithBackButton() {
 

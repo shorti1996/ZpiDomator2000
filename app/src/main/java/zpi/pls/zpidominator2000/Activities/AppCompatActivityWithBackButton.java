@@ -1,4 +1,4 @@
-package zpi.pls;
+package zpi.pls.zpidominator2000.Activities;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
