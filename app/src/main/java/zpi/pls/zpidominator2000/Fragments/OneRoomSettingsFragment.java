@@ -40,6 +40,7 @@ import static zpi.pls.zpidominator2000.Utils.showToast;
 
 /**
  * A simple {@link Fragment} subclass.
+ * Fragment that shows settings for the specified room.
  * Activities that contain this fragment must implement the
  * {@link OneRoomSettingsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
@@ -128,6 +129,9 @@ public class OneRoomSettingsFragment extends Fragment {
         }
     }
 
+    /**
+     * Not only creating the view but it also starts pinging the api for data
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -178,6 +182,9 @@ public class OneRoomSettingsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Schedule setTemperature update to the server (async)
+     */
     private void commitSetTemp() {
         Log.d(TAG, "Attempting to commit temperature to api");
         RoomTemp roomTemp = new RoomTemp();
@@ -202,17 +209,26 @@ public class OneRoomSettingsFragment extends Fragment {
                 });
     }
 
+    /**
+     * Stop pinging
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
         pingSubscription.dispose();
     }
 
+    /**
+     * Download up-to-date settings from the server
+     */
     private void downsyncSettings() {
         downsyncTemperatures();
         downsyncLights();
     }
 
+    /**
+     * Download up-to-date temperature settings from the server
+     */
     private void downsyncTemperatures() {
         if (!shouldUpdateTemp.get()) {
             showToast(getContext(), "Not updating temperature, pending changes");
@@ -244,6 +260,9 @@ public class OneRoomSettingsFragment extends Fragment {
                 });
     }
 
+    /**
+     * Download up-to-date light settings from the server
+     */
     private void downsyncLights() {
         if (lightsToUpdateCount.get() > 0) {
             showToast(getContext(), "Not updating lights, pending changes");
@@ -276,6 +295,11 @@ public class OneRoomSettingsFragment extends Fragment {
                 });
     }
 
+    /**
+     * Schedule light state update to the server (async)
+     * @param light Light to update
+     * @param enabled New light's state
+     */
     private void scheduleUpsyncLight(Lights.Light light, boolean enabled) {
         lightsToUpdateCount.incrementAndGet();
         Log.d("Lights", "Light " + light.getId() + " update scheduled, to sync: " + lightsToUpdateCount.get());
@@ -294,11 +318,21 @@ public class OneRoomSettingsFragment extends Fragment {
                 });
     }
 
+    /**
+     * Format temperature to XX.XX&#8451;C
+     * @param temperature temperature to format
+     * @return Human-readable temperature string
+     */
     private String formatCurrentTemperature(double temperature) {
         String temperatureString = String.format(Locale.getDefault(), "%.2f", temperature);
         return getResources().getString(R.string.one_room_curr_temp, temperatureString);
     }
 
+    /**
+     * Format temperature to XX&#8451;C
+     * @param temperature temperature to format
+     * @return Human-readable temperature string
+     */
     private String formatSetTemperature(double temperature) {
         String temperatureString = String.format(Locale.getDefault(), "%.0f", temperature);
         return getResources().getString(R.string.one_room_set_temp, temperatureString);

@@ -22,7 +22,7 @@ import zpi.pls.zpidominator2000.R;
 import zpi.pls.zpidominator2000.Utils;
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of {@link zpi.pls.zpidominator2000.Model.Rooms.Room}s.
  * <p/>
  * Activities containing this fragment MUST implement the {@link OnRoomSelectedListener}
  * interface.

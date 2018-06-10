@@ -35,6 +35,7 @@ import zpi.pls.zpidominator2000.Utils;
 
 /**
  * A simple {@link Fragment} subclass.
+ * Frament that displays the home plan. User can switch the floors.
  * Activities that contain this fragment must implement the
  * {@link HomePlanFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
@@ -145,6 +146,9 @@ public class HomePlanFragment extends Fragment {
         loadFloor(isOnZeroFloor);
     }
 
+    /**
+     * Load rooms from the server. It's necessary because the rooms are clickable.
+     */
     private void loadRooms() {
         if (apiService != null) {
             apiService.listRooms()
@@ -159,6 +163,9 @@ public class HomePlanFragment extends Fragment {
         }
     }
 
+    /**
+     * Show the CardView with info about the floor.
+     */
     @SuppressLint("DefaultLocale")
     private void showFloorInfoCard() {
         floorInfoCard.setVisibility(View.VISIBLE);
@@ -189,6 +196,9 @@ public class HomePlanFragment extends Fragment {
         }
     }
 
+    /**
+     * Show the CardView with the chosen room's details
+     */
     @SuppressLint("DefaultLocale")
     private void showRoomInfoCard(Rooms.Room room) {
         floorInfoCard.setVisibility(View.INVISIBLE);
@@ -215,19 +225,26 @@ public class HomePlanFragment extends Fragment {
                 }).subscribe();
     }
 
+    /**
+     * Swap the displayed floor
+     */
     public void swapFloor() {
         isOnZeroFloor = !isOnZeroFloor;
         loadFloor(isOnZeroFloor);
     }
 
-    private void loadFloor(boolean isOnGroundFloor) {
+    /**
+     * Load the proper floor
+     * @param showGroundFloor whether show the ground floor or not
+     */
+    private void loadFloor(boolean showGroundFloor) {
         showFloorInfoCard();
 
         View view = getView();
         if (view != null) {
             ViewGroup floor_content = view.findViewById(R.id.include_floor);
             floor_content.removeAllViews();
-            if (isOnGroundFloor) {
+            if (showGroundFloor) {
                 getLayoutInflater().inflate(R.layout.parter_layout, floor_content);
                 homePlanIv = view.findViewById(R.id.homeFromAboveIv);
                 Glide.with(this)
@@ -280,6 +297,10 @@ public class HomePlanFragment extends Fragment {
         }
     }
 
+    /**
+     * Show info card about the room
+     * @param index from {@link HomePlanFragment#roomList}
+     */
     private void goToRoom(int index) {
         if (roomList != null) {
             if (!roomList.isEmpty()) {

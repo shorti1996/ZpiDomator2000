@@ -36,6 +36,7 @@ import zpi.pls.zpidominator2000.Utils;
 
 /**
  * A simple {@link Fragment} subclass.
+ * This Fragment shows the statistics of the specified room, some charts etc.
  * Activities that contain this fragment must implement the
  * {@link OneRoomStatsFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
@@ -150,6 +151,9 @@ public class OneRoomStatsFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Load temperature history into charts
+     */
     private void loadTemp() {
         Observable<TempHistory> tempHistoryObservableMonth = apiService.getTempHistoryForRoom(roomId, 10);
         Observable<TempHistory> tempHistoryObservableDay = apiService.getTempHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
@@ -192,6 +196,9 @@ public class OneRoomStatsFragment extends Fragment {
                 .subscribe();
     }
 
+    /**
+     * Load light usage history into charts
+     */
     private void loadLight() {
         Observable<Power> powerHistoryObservableMonth = apiService.getPowerHistoryForRoom(roomId, 10);
         Observable<Power> powerHistoryObservableDay = apiService.getPowerHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
@@ -228,6 +235,9 @@ public class OneRoomStatsFragment extends Fragment {
                 .subscribe();
     }
 
+    /**
+     * Load power usage history into charts
+     */
     private void loadPower() {
         Observable<Power> powerHistoryObservableMonth = apiService.getPowerHistoryForRoom(roomId, 10);
         Observable<Power> powerHistoryObservableDay = apiService.getPowerHistoryForRoom(roomId, N_LAST_LIGHT_ENTRIES_DAY);
@@ -264,6 +274,11 @@ public class OneRoomStatsFragment extends Fragment {
                 .subscribe();
     }
 
+    /**
+     * Clear data from chart
+     * @param lineChart linechart to clear
+     * @param progressBar optional progress bar to show
+     */
     private static void resetChartData(LineChart lineChart, @Nullable ProgressBar progressBar) {
         lineChart.setData(null);
         lineChart.invalidate();
@@ -274,6 +289,12 @@ public class OneRoomStatsFragment extends Fragment {
         }
     }
 
+    /**
+     * Load  values into chart
+     * @param lineChart chart to update
+     * @param values values to show
+     * @param dataLabel label
+     */
     private static void loadToChart(LineChart lineChart, List<Double> values, String dataLabel) {
         List<Entry> entries = new ArrayList<>();
         if (values != null && !values.isEmpty()) {

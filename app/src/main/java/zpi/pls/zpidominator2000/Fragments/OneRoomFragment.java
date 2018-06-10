@@ -20,6 +20,8 @@ import zpi.pls.zpidominator2000.R;
 
 /**
  * A simple {@link Fragment} subclass.
+ * Fragment that contains {@link OneRoomSettingsFragment} and {@link OneRoomStatsFragment}.
+ * The children Fragments are controlled using {@link OneRoomPageAdapter}.
  * Activities that contain this fragment must implement the
  * {@link OnOneRoomInteractionListener} interface
  * to handle interaction events.
@@ -88,6 +90,10 @@ public class OneRoomFragment extends Fragment {
 
     }
 
+    /**
+     * Setup viewPager with the specified room
+     * @param viewPager view from the layout
+     */
     private void setupViewPager(ViewPager viewPager) {
         OneRoomSettingsFragment oneRoomSettingsFragment = OneRoomSettingsFragment.newInstance(apiService, roomId, roomName);
         OneRoomStatsFragment oneRoomStatsFragment = OneRoomStatsFragment.newInstance(apiService, roomId);
