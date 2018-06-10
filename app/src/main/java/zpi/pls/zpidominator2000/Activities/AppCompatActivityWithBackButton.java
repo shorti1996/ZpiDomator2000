@@ -12,6 +12,9 @@ import zpi.pls.zpidominator2000.Utils;
  * Created by wojciech.liebert on 02.06.2018.
  */
 
+/**
+ * Helper that enables the back button for every activity extending this class
+ */
 public abstract class AppCompatActivityWithBackButton extends AppCompatActivity {
 
     @Override

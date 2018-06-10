@@ -5,6 +5,9 @@ import android.os.Bundle;
 import zpi.pls.zpidominator2000.R;
 import zpi.pls.zpidominator2000.Utils;
 
+/**
+ * Activity that shows info about the Application
+ */
 public class AboutActivity extends AppCompatActivityWithBackButton {
 
     @Override

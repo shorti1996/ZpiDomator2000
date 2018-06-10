@@ -38,6 +38,10 @@ import zpi.pls.zpidominator2000.Model.Rooms;
 import zpi.pls.zpidominator2000.R;
 import zpi.pls.zpidominator2000.Utils;
 
+/**
+ * Activity that does pretty much the most of the job.
+ * It handles every interesting fragments changes, creates Retrofit instance and other stuff...
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         RoomsFragment.OnRoomSelectedListener,
@@ -136,6 +140,9 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     * Create retrofit instance and initialize the app- show home plan
+     */
     private void initializeApiAndShowHome() {
         ApiParams apiParams = new ApiParams().getParams();
         String apiAddress = apiParams.getApiAddress();
@@ -165,6 +172,11 @@ public class MainActivity extends AppCompatActivity
         goToHomePlan();
     }
 
+    /**
+     * Retrieve address of the api service from the SharedPreferences
+     * @param context It;s needed to get SharedPrefs
+     * @return Address of the api service
+     */
     @NonNull
     public static String getApiAddress(Context context) {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.shared_prefs_name), Context.MODE_PRIVATE);
@@ -172,6 +184,10 @@ public class MainActivity extends AppCompatActivity
         return sharedPref.getString(context.getString(R.string.setting_api_address_key), defaultValue);
     }
 
+    /**
+     * Keep the UI state of the Navigation drawer in sync with every user's interaction.
+     * E.g. button back press or when redirected to OneRoomSettingsFragment from the cardView in HomePlanFragment
+     */
     private void updateNavDrawer() {
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
         int backStackEntryCount = fragmentManager.getBackStackEntryCount();
@@ -181,15 +197,11 @@ public class MainActivity extends AppCompatActivity
                 drawerView.setCheckedItem(R.id.nav_home);
             }
         }
-//        else {
-//            android.support.v4.app.FragmentManager.BackStackEntry backStackEntry = fragmentManager.getBackStackEntryAt(backStackEntryCount - 1);
-//            String tag = backStackEntry.getName();
-//            Fragment fragment = fragmentManager.findFragmentByTag(tag);
-//            int x = 0;
-//        }
-
     }
 
+    /**
+     * Intercept back button press if nav drawer is open
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -224,6 +236,9 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Show HomePlanFragment
+     */
     private void goToHomePlan() {
 //        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 //        Log.d("BACKSTACK", "" + getSupportFragmentManager().getBackStackEntryCount());
@@ -248,6 +263,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Show RoomsFragment
+     */
     private void goToRooms() {
         // Create new fragment and transaction
         Fragment newFragment = RoomsFragment.newInstance(apiService);
@@ -268,6 +286,10 @@ public class MainActivity extends AppCompatActivity
 //        tabLayout.addTab();
     }
 
+    /**
+     * Show OneRoomFragment
+     * @param item Room to show
+     */
     private void goToOneRoom(Rooms.Room item) {
         // Create new fragment and transaction
         Fragment newFragment = OneRoomFragment.newInstance(apiService, item);
@@ -346,6 +368,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * Pop backstack if user manages to go back to HomePlanFragment with some items on the backstack
+     */
     private void popEntireBackstack() {
         android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
 //        int backStackEntryCount = fragmentManager.getBackStackEntryCount();
@@ -379,6 +404,10 @@ public class MainActivity extends AppCompatActivity
         goToOneRoom(item);
     }
 
+    /**
+     * When api address changes, we need to update the Retrofit client as well as the api service
+     * @param newAddress
+     */
     @Override
     public void OnApiAddressChanged(String newAddress) {
         retrofit = new ZpiApiRetrofitClient(newAddress, null, null, null).getRetrofit();
@@ -390,6 +419,9 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    /**
+     * Method object to retrieve api parameters from SharedPrefs
+     */
     private class ApiParams {
         private String apiAddress;
         @Nullable private String username;
