@@ -2,6 +2,7 @@ package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -123,10 +124,10 @@ public class OneRoomStatsFragment extends Fragment {
         spinner = view.findViewById(R.id.one_room_stats_charts_spinner);
         spinnerItems = getResources().getStringArray(R.array.stats_spinner_array);
         spinnerAdapter = new ArrayAdapter<>(this.getContext(),
-                R.layout.support_simple_spinner_dropdown_item,
+                R.layout.spinner_item,
                 spinnerItems);
         spinner.setAdapter(spinnerAdapter);
-
+        spinner.getBackground().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
         spinner.setSelection(0, true);
         View spinnerView = spinner.getSelectedView();
         ((TextView)spinnerView).setTextColor(Color.WHITE);

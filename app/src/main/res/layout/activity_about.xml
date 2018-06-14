@@ -8,40 +8,54 @@
     tools:context="zpi.pls.zpidominator2000.AboutActivity">
 
     <com.ldealmei.libs.carousel.CarouselPicker
-        android:id="@+id/my_carousel_picker"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_marginTop="32dp"
-        android:background="@android:color/transparent"
-        app:customDescriptionColor="@color/white"
-        app:customIndicator="@drawable/light"
-        app:customIndicatorColor="@color/white"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.ldealmei.libs.carousel.CarouselPicker
         android:id="@+id/my_carousel_picker1"
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_marginBottom="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@android:color/transparent"
         app:customDescriptionColor="@color/white"
         app:customIndicator="@drawable/light"
         app:customIndicatorColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/my_carousel_picker2"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.ldealmei.libs.carousel.CarouselPicker
         android:id="@+id/my_carousel_picker2"
         android:layout_width="match_parent"
         android:layout_height="150dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@android:color/transparent"
         app:customDescriptionColor="@color/white"
         app:customIndicator="@drawable/light"
         app:customIndicatorColor="@color/white"
-        app:layout_constraintTop_toBottomOf="@+id/my_carousel_picker"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/my_carousel_picker" />
+
+    <com.ldealmei.libs.carousel.CarouselPicker
+        android:id="@+id/my_carousel_picker"
+        android:layout_width="395dp"
+        android:layout_height="150dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="52dp"
+        android:background="@android:color/transparent"
+        app:customDescriptionColor="@color/white"
+        app:customIndicator="@drawable/light"
+        app:customIndicatorColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_goneMarginTop="30dp" />
 
 
 </android.support.constraint.ConstraintLayout>

@@ -24,6 +24,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -108,6 +109,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             @Override
             public void onClick(View view) {
                 attemptLogin();
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) {
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
             }
         });
 
@@ -250,7 +255,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //                         \ /\  \_________________________\
 //             passwords to \  \ / ______________________  /
 //                           \  / ______________________  /
-//             shared prefs   \/_________________________/
+//             shared prefs   \/_________________________/           <3
 
 
                             editor.putString(getString(R.string.saved_password_key), password); // I KNOW XDDD

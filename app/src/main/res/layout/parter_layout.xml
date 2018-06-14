@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/homeFromAboveIv"
-        android:layout_width="262dp"
-        android:layout_height="515dp"
+        android:layout_width="220dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.502"
@@ -20,7 +20,7 @@
 
     <ImageView
         android:id="@+id/button_parter1_1"
-        android:layout_width="263dp"
+        android:layout_width="218dp"
         android:layout_height="159dp"
         android:background="@android:color/transparent"
         android:text="Button"
@@ -29,10 +29,10 @@
 
     <ImageView
         android:id="@+id/button_parter1_2"
-        android:layout_width="129dp"
-        android:layout_height="246dp"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="164dp"
+        android:layout_width="115dp"
+        android:layout_height="188dp"
+        android:layout_marginStart="104dp"
+        android:layout_marginTop="156dp"
         android:background="@android:color/transparent"
         android:text="Button"
         app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
@@ -40,9 +40,10 @@
 
     <ImageView
         android:id="@+id/button_parter2"
-        android:layout_width="124dp"
+        android:layout_width="102dp"
         android:layout_height="92dp"
-        android:layout_marginTop="256dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="240dp"
         android:background="@android:color/transparent"
         android:text="Button"
         app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
@@ -50,9 +51,18 @@
 
     <ImageView
         android:id="@+id/button_parter3"
-        android:layout_width="133dp"
-        android:layout_height="170dp"
-        android:layout_marginStart="4dp"
+        android:layout_width="118dp"
+        android:layout_height="138dp"
+        android:background="@android:color/transparent"
+        android:text="Button"
+        app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
+        tools:layout_editor_absoluteY="332dp" />
+
+    <ImageView
+        android:id="@+id/button_parter4"
+        android:layout_width="113dp"
+        android:layout_height="102dp"
+        android:layout_marginStart="104dp"
         android:layout_marginTop="344dp"
         android:background="@android:color/transparent"
         android:text="Button"
@@ -60,20 +70,9 @@
         app:layout_constraintTop_toTopOf="@+id/homeFromAboveIv" />
 
     <ImageView
-        android:id="@+id/button_parter4"
-        android:layout_width="113dp"
-        android:layout_height="110dp"
-        android:layout_marginStart="144dp"
-        android:layout_marginTop="404dp"
-        android:background="@android:color/transparent"
-        android:text="Button"
-        app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
-        app:layout_constraintTop_toTopOf="@+id/homeFromAboveIv" />
-
-    <ImageView
         android:id="@+id/button_parter5"
-        android:layout_width="120dp"
-        android:layout_height="78dp"
+        android:layout_width="106dp"
+        android:layout_height="65dp"
         android:layout_marginTop="176dp"
         android:background="@android:color/transparent"
         android:text="Button"

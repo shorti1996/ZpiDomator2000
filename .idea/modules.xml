@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ZpiDomator2000.iml" filepath="$PROJECT_DIR$/ZpiDomator2000.iml" />
+      <module fileurl="file://C:\Users\aleksandra.koziel\Documents\GitHub\ZpiDomator2000\ZpiDomator2000.iml" filepath="C:\Users\aleksandra.koziel\Documents\GitHub\ZpiDomator2000\ZpiDomator2000.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

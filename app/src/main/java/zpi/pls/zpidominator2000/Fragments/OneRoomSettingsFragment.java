@@ -138,8 +138,8 @@ public class OneRoomSettingsFragment extends Fragment {
         setTempVal = view.findViewById(R.id.one_room_set_temp_val);
         lightsRv = view.findViewById(R.id.one_room_light_rv);
         lightsRv.setLayoutManager(new LinearLayoutManager(getContext()));
-        tempDown = view.findViewById(R.id.one_room_temp_up_2);
-        tempUp = view.findViewById(R.id.one_room_temp_down_2);
+        tempDown = view.findViewById(R.id.one_room_temp_down_2);
+        tempUp = view.findViewById(R.id.one_room_temp_up_2);
         tempGroup = view.findViewById(R.id.group_temp_settings_card);
         tempProgressBar = view.findViewById(R.id.progressBar_temp_setting_card);
         lightsProgressBar = view.findViewById(R.id.progressBar_light_settings_card);

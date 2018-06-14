@@ -9,19 +9,21 @@
 
     <ImageView
         android:id="@+id/homeFromAboveIv"
-        android:layout_width="260dp"
-        android:layout_height="513dp"
+        android:layout_width="220dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/button_pietro1_1"
         android:layout_width="116dp"
         android:layout_height="166dp"
         android:layout_marginStart="144dp"
-        android:layout_marginTop="344dp"
+        android:layout_marginTop="292dp"
         android:background="@android:color/transparent"
         android:text="Button"
         app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
@@ -29,8 +31,8 @@
 
     <ImageView
         android:id="@+id/button_pietro1_2"
-        android:layout_width="124dp"
-        android:layout_height="196dp"
+        android:layout_width="119dp"
+        android:layout_height="167dp"
         android:layout_marginStart="144dp"
         android:layout_marginTop="140dp"
         android:background="@android:color/transparent"
@@ -51,8 +53,8 @@
 
     <ImageView
         android:id="@+id/button_pietro1_4"
-        android:layout_width="101dp"
-        android:layout_height="153dp"
+        android:layout_width="103dp"
+        android:layout_height="127dp"
         android:layout_marginTop="140dp"
         android:background="@android:color/transparent"
         android:text="Button"
@@ -63,7 +65,7 @@
         android:id="@+id/button_pietro1_5"
         android:layout_width="112dp"
         android:layout_height="205dp"
-        android:layout_marginTop="304dp"
+        android:layout_marginTop="264dp"
         android:background="@android:color/transparent"
         android:text="Button"
         app:layout_constraintStart_toStartOf="@+id/homeFromAboveIv"
