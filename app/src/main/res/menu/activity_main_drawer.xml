@@ -7,32 +7,31 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_home_white_24dp"
-            android:title="Dom" />
+            android:title="House" />
         <item
             android:id="@+id/nav_rooms"
             android:icon="@drawable/ic_rooms"
-            android:title="Pokoje" />
+            android:title="Rooms" />
         <item
             android:id="@+id/nav_users"
             android:icon="@drawable/ic_users"
-            android:title="Użytkownicy" />
+            android:title="Users" />
     </group>
 
-    <item android:title="Pozostałe">
+    <item android:title="Info">
         <menu>
             <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Udostępnij"
-                android:visible="false" />
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/gearwheelscouple"
+                android:title="Settings"/>
             <item
                 android:id="@+id/nav_help"
                 android:icon="@drawable/ic_help_black_24dp"
-                android:title="Pomoc" />
+                android:title="Help" />
             <item
                 android:id="@+id/nav_about"
                 android:icon="@drawable/ic_description_black_24dp"
-                android:title="O aplikacji" />
+                android:title="About" />
         </menu>
     </item>
 

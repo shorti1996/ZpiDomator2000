@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginEnd="20dp"
+    android:layout_marginStart="20dp"
     tools:context="zpi.pls.zpidominator2000.Fragments.OneRoomSettingsFragment">
 
     <android.support.v7.widget.CardView
@@ -11,7 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardElevation="0dp"
         app:contentPaddingBottom="8dp"
         app:contentPaddingTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -36,23 +40,28 @@
                 android:id="@+id/one_room_temp_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Ustawienia temperatury"
+                android:layout_marginStart="24dp"
+                android:text="Temperature settings"
+                android:paddingBottom="15dp"
+                android:textColor="@color/white"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/thermometer_ic"
                 app:layout_constraintStart_toEndOf="@+id/thermometer_ic"
                 app:layout_constraintTop_toTopOf="@+id/thermometer_ic" />
 
             <ImageButton
-                android:id="@+id/one_room_temp_up"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/one_room_temp_down_2"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="fitXY"
+                style="?android:attr/borderlessButtonStyle"
                 app:layout_constraintBottom_toBottomOf="@+id/one_room_set_temp_val"
                 app:layout_constraintEnd_toStartOf="@+id/spacer_l"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/one_room_set_temp_val"
-                app:srcCompat="@drawable/ic_arrow_drop_up_black_24dp" />
+                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp" />
 
             <View
                 android:id="@+id/spacer_l"
@@ -61,7 +70,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/one_room_set_temp_val"
                 app:layout_constraintEnd_toStartOf="@+id/one_room_set_temp_val"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/one_room_temp_up"
+                app:layout_constraintStart_toEndOf="@+id/one_room_temp_down_2"
                 app:layout_constraintTop_toTopOf="@+id/one_room_set_temp_val" />
 
             <TextView
@@ -71,6 +80,8 @@
                 android:layout_marginTop="8dp"
                 android:text="22&#8451;"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display2"
+                android:textColor="@color/white"
+                android:textSize="40sp"
                 app:layout_constraintEnd_toStartOf="@+id/spacer_r"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/spacer_l"
@@ -82,21 +93,23 @@
                 android:layout_width="8dp"
                 android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="@+id/one_room_set_temp_val"
-                app:layout_constraintEnd_toStartOf="@+id/one_room_temp_down"
+                app:layout_constraintEnd_toStartOf="@+id/one_room_temp_up_2"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/one_room_set_temp_val"
                 app:layout_constraintTop_toTopOf="@+id/one_room_set_temp_val" />
 
             <ImageButton
-                android:id="@+id/one_room_temp_down"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/one_room_temp_up_2"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="fitXY"
                 app:layout_constraintBottom_toBottomOf="@+id/one_room_set_temp_val"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/spacer_r"
                 app:layout_constraintTop_toTopOf="@+id/one_room_set_temp_val"
-                app:srcCompat="@drawable/ic_arrow_drop_down_black_24dp" />
+                app:srcCompat="@drawable/ic_arrow_drop_up_black_24dp" />
 
             <TextView
                 android:id="@+id/one_room_current_temp_val"
@@ -104,6 +117,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:text="@string/one_room_curr_temp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/spacer_r"
                 app:layout_constraintStart_toEndOf="@+id/spacer_l"
@@ -127,8 +142,8 @@
                 android:layout_marginTop="8dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/one_room_current_temp_val"
-                app:layout_constraintEnd_toEndOf="@+id/one_room_temp_down"
-                app:layout_constraintStart_toStartOf="@+id/one_room_temp_up"
+                app:layout_constraintEnd_toEndOf="@+id/one_room_temp_up_2"
+                app:layout_constraintStart_toStartOf="@+id/one_room_temp_down_2"
                 app:layout_constraintTop_toTopOf="@+id/one_room_set_temp_val" />
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
@@ -136,6 +151,8 @@
     <android.support.v7.widget.CardView
         android:id="@+id/one_room_card_light"
         android:layout_width="0dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/transparent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -157,7 +174,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/lightbulb"
+                android:src="@drawable/idea"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -165,8 +182,10 @@
                 android:id="@+id/one_room_light_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Ustawienia oświetlenia"
+                android:layout_marginStart="24dp"
+                android:text="Light settings"
+                android:textColor="@color/white"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/lightbulb_ic"
                 app:layout_constraintStart_toEndOf="@+id/lightbulb_ic"
                 app:layout_constraintTop_toTopOf="@+id/lightbulb_ic" />
