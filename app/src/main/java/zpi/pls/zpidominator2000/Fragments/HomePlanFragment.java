@@ -231,7 +231,7 @@ public class HomePlanFragment extends Fragment {
                 getLayoutInflater().inflate(R.layout.parter_layout, floor_content);
                 homePlanIv = view.findViewById(R.id.homeFromAboveIv);
                 Glide.with(this)
-                        .load(R.drawable.a1)
+                        .load(R.drawable.a2)
                         .into(homePlanIv);
                 homeName.setText(R.string.ground_floor);
 

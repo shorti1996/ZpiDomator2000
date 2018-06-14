@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/side_nav_bar"
     android:layout_marginEnd="20dp"
     android:layout_marginStart="20dp"
     tools:context="zpi.pls.zpidominator2000.Fragments.OneRoomSettingsFragment">
@@ -43,6 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="24dp"
                 android:text="Temperature settings"
+                android:paddingBottom="15dp"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="@+id/thermometer_ic"
