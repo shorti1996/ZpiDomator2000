@@ -37,6 +37,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:gravity="center"
+                            android:textSize="18sp"
+                            android:textAlignment="textStart"
                             android:textAppearance="@android:style/TextAppearance.Material.Headline"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"

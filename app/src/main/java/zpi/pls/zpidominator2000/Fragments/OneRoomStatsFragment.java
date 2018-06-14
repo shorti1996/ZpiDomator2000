@@ -1,6 +1,7 @@
 package zpi.pls.zpidominator2000.Fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -124,10 +126,19 @@ public class OneRoomStatsFragment extends Fragment {
                 R.layout.support_simple_spinner_dropdown_item,
                 spinnerItems);
         spinner.setAdapter(spinnerAdapter);
+
+        spinner.setSelection(0, true);
+        View spinnerView = spinner.getSelectedView();
+        ((TextView)spinnerView).setTextColor(Color.WHITE);
+        ((TextView)spinnerView).setTextSize(15);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String spinnerItem = spinnerItems[position];
+
+                ((TextView) view).setTextColor(Color.WHITE);
+                ((TextView) view).setTextSize(15);
+
                 if (spinnerItem.equals(getString(R.string.stats_spinner_temp))) {
                     loadTemp();
                 } else if (spinnerItem.equals(getString(R.string.stats_spinner_lights))) {
@@ -147,6 +158,7 @@ public class OneRoomStatsFragment extends Fragment {
         progressBar2 = view.findViewById(R.id.progressBar_stats_2);
         progressBar2.setVisibility(View.VISIBLE);
 
+
         return view;
     }
 
@@ -163,15 +175,15 @@ public class OneRoomStatsFragment extends Fragment {
         resetChartData(chart2, progressBar2);
 
 
-        chart1Title.setText("Temperatura 24 h");
-        chart2Title.setText("Temperatura 7 dni");
+        chart1Title.setText("Temperature stats: 24 hours");
+        chart2Title.setText("Temperature stats: 7 days");
 
         tempHistoryObservableDay
                 .timeout(10, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(tempHistoryDay -> {
-                    loadToChart(chart1, tempHistoryDay.getTemperatureHistory(), "Temperatura");
+                    loadToChart(chart1, tempHistoryDay.getTemperatureHistory(), "Temperature", "°C");
                     chart1.setVisibility(View.VISIBLE);
                     progressBar1.setVisibility(View.GONE);
                 })
@@ -180,7 +192,7 @@ public class OneRoomStatsFragment extends Fragment {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(tempHistoryMonth -> {
-                            loadToChart(chart2, tempHistoryMonth.getTemperatureHistory(), "Temperatura");
+                            loadToChart(chart2, tempHistoryMonth.getTemperatureHistory(), "Temperature", "°C");
                             chart2.setVisibility(View.VISIBLE);
                             progressBar2.setVisibility(View.GONE);
                         })
@@ -199,15 +211,15 @@ public class OneRoomStatsFragment extends Fragment {
         resetChartData(chart1, progressBar1);
         resetChartData(chart2, progressBar2);
 
-        chart1Title.setText("Światło 24 h");
-        chart2Title.setText("Światło 7 dni");
+        chart1Title.setText("Lights stats: 24 hours");
+        chart2Title.setText("Lights stats: 7 days");
 
         powerHistoryObservableDay
                 .timeout(10, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(tempHistoryDay -> {
-                    loadToChart(chart1, tempHistoryDay.getLightPowerHistory(), "Światło");
+                    loadToChart(chart1, tempHistoryDay.getLightPowerHistory(), "Light", "kWh");
                     chart1.setVisibility(View.VISIBLE);
                     progressBar1.setVisibility(View.GONE);
                 })
@@ -216,7 +228,7 @@ public class OneRoomStatsFragment extends Fragment {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(tempHistoryMonth -> {
-                            loadToChart(chart2, tempHistoryMonth.getLightPowerHistory(), "Światło");
+                            loadToChart(chart2, tempHistoryMonth.getLightPowerHistory(), "Light", "kWh");
                             chart2.setVisibility(View.VISIBLE);
                             progressBar2.setVisibility(View.GONE);
                         })
@@ -235,15 +247,15 @@ public class OneRoomStatsFragment extends Fragment {
         resetChartData(chart1, progressBar1);
         resetChartData(chart2, progressBar2);
 
-        chart1Title.setText("Energia 24 h");
-        chart2Title.setText("Energia 7 dni");
+        chart1Title.setText("Energy usage: 24 hours");
+        chart2Title.setText("Energy usage: 7 days");
 
         powerHistoryObservableDay
                 .timeout(10, TimeUnit.SECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext(tempHistoryDay -> {
-                    loadToChart(chart1, tempHistoryDay.getClimatPowerHistory(), "Energia");
+                    loadToChart(chart1, tempHistoryDay.getClimatPowerHistory(), "Energy", "kWh");
                     chart1.setVisibility(View.VISIBLE);
                     progressBar1.setVisibility(View.GONE);
                 })
@@ -252,7 +264,7 @@ public class OneRoomStatsFragment extends Fragment {
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .doOnNext(tempHistoryMonth -> {
-                            loadToChart(chart2, tempHistoryMonth.getClimatPowerHistory(), "Energia");
+                            loadToChart(chart2, tempHistoryMonth.getClimatPowerHistory(), "Energy", "kWh");
                             chart2.setVisibility(View.VISIBLE);
                             progressBar2.setVisibility(View.GONE);
                         })
@@ -274,7 +286,7 @@ public class OneRoomStatsFragment extends Fragment {
         }
     }
 
-    private static void loadToChart(LineChart lineChart, List<Double> values, String dataLabel) {
+    private static void loadToChart(LineChart lineChart, List<Double> values, String dataLabel, String desc) {
         List<Entry> entries = new ArrayList<>();
         if (values != null && !values.isEmpty()) {
             for (int i = 0; i < values.size(); i++) {
@@ -282,8 +294,28 @@ public class OneRoomStatsFragment extends Fragment {
                 entries.add(new Entry(i, historyEntry.floatValue()));
             }
             LineDataSet lineDataSet = new LineDataSet(entries, dataLabel);
+            lineDataSet.setColor(Color.WHITE);
+            lineDataSet.setValueTextColor(Color.WHITE);
+            lineDataSet.setHighLightColor(Color.BLUE);
             LineData lineData = new LineData(lineDataSet);
+            lineData.setValueTextColor(Color.WHITE);
+            Description description = new Description();
+            description.setText(desc);
+            description.setTextSize(20);
+            description.setTextColor(Color.WHITE);
+            lineChart.setDescription(description);
             lineChart.setData(lineData);
+
+            lineChart.getAxisLeft().setTextColor(Color.WHITE);
+            lineChart.getAxisLeft().setGridColor(Color.WHITE);
+            lineChart.getAxisRight().setTextColor(Color.WHITE);
+            lineChart.getAxisRight().setGridColor(Color.WHITE);// left y-axis
+            lineChart.getXAxis().setTextColor(Color.WHITE);
+            lineChart.getXAxis().setGridColor(Color.WHITE);
+            lineChart.getLegend().setTextColor(Color.WHITE);
+
+            lineChart.setGridBackgroundColor(Color.WHITE);
+            lineChart.setNoDataTextColor(Color.WHITE);
             lineChart.invalidate();
         }
     }

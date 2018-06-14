@@ -29,17 +29,24 @@
         </activity>
         <activity
             android:name=".HelpActivity"
+
+            android:label="Help"
             android:screenOrientation="portrait" />
-        <activity android:name=".SettingsActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="Settings" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zpi.pls.zpidominator2000.MainActivity" />
         </activity>
-        <activity android:name=".AboutActivity"></activity>
+        <activity
+            android:name=".AboutActivity"
+            android:label="About" />
     </application>
 
 </manifest>

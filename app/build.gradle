@@ -46,6 +46,8 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
     //    implementation 'com.android.support:support-compat:26.1.1'
     //    implementation 'com.android.support:animated-vector-drawable:26.1.0'
+
+    compile 'com.github.lucas-asu:carousel-picker-android:v1.0'
 }
 
 apply plugin: 'kotlin-android'

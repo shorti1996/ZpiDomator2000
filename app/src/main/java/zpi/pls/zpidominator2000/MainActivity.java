@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity
         FloatingActionButton fab1 = findViewById(R.id.fab1);
         fab1.setOnClickListener(view -> {
             popEntireBackstack();
-            Snackbar.make(view, "Witaj w domku", Snackbar.LENGTH_SHORT)
+            Snackbar.make(view, "Your home is your castle, my king", Snackbar.LENGTH_SHORT)
 //                        .setAction("Action", this)
                     .show();
             goToHomePlan();

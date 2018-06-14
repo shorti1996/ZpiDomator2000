@@ -69,10 +69,10 @@ public class ZpiApiRetrofitClient {
 
     public ZpiApiRetrofitClient(@Nullable String apiAddress, String username, String password, OnApiAddressChangedListener callback) {
         if (apiAddress == null) {
-            String apiServer = "192.168.137.122";
+            String apiServer = "7a888d95.ngrok.io";
             apiAddress = apiServer;
         }
-        retrofit = getRetrofitHelper(apiAddress, username, password);
+        retrofit =  getRetrofitHelper(apiAddress, username, password);
         Log.d("AA", retrofit.baseUrl().toString());
         callbacks.add(callback);
     }
